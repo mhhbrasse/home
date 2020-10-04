@@ -67,8 +67,8 @@ int main(int argc, char **argv)
 	printf("Selected ID is %d, model: %s\n", ID, objectData[ID].modelName);
 
 	//readFK6("..\\fk6_xls.csv","");
-	convert2("..\\Models\\iss.small.obj", "..\\Models\\iss.small.out.obj" );
-	return -1;	
+	//convert2("..\\Models\\iss.small.obj", "..\\Models\\iss.small.out.obj" );
+	//return -1;	
 
 	// Create Display
 	TDisplay myDisplay( displayWidth, displayHeight );
