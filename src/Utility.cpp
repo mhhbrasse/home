@@ -141,7 +141,7 @@ void createTextureFromFK6(TRender& myRenderer, char* in_filename, char* out_file
 		//float r = 2.0*(V-2.0f)*(V-2.0f)/100.0f+0.2f;
 		float r = (V-2.0f)/10.0f+0.2f;
 		printf ( "r is %f\n", r );
-		myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 1, (int) r*255, (int) r*255, (int) r*225 );
+		myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 1, (int) (r*255), (int) (r*255), (int) (r*225) );
 		//myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 2, r*255, r*255, r*225 );
 		//myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 3, r*200, r*170, r*0 );
 		
@@ -168,34 +168,35 @@ void createTextureFromStarCatalogDat(TRender& myRenderer, char* in_filename, cha
 		DEC=1023.0f*DEC0/90.0f;
 		//printf("DEC is %f\n", DEC);
 		sscanf(&buf[171], "%f", &V);
-		printf("%f\n", V);
 		//V=MIN(10*pow(10,-V/2.5),1);		
 		//printf("V is %f\n", MIN(10*pow(10,-V/2.5),1));
 		// [-1.46/5.03]
 		float r = (float) MIN(10.0f*pow(10,-V/2.5),1.0f);		
 		r=sqrt(r);
+		myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 1, (int)(r*255), (int)(r*255), (int)(r*225) );
+		//myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 2, (int)(r*255), (int)(r*255), (int)(r*225) );
+		//myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 3, (int)(r*255), (int)(r*255), (int)(r*225) );
 		
-		myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 1, (int) r*255, (int)r*255, (int)r*225 );
-		myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, 2, (int)r*255, (int)r*255, (int)r*225 );
 		if (V<0.0)
 		{
 			printf("V negative\n");
-			for (int j=3; j<4; j++)
-				myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, j, (int)r*255, (int)r*255, (int)r*225 );
+			for (int j=2; j<3; j++)
+				myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, j, (int)(r*255), (int)(r*255), (int)(r*225) );
 		}
 		if ((V<-1.4) || ((abs(RA0-165.70)<0.01) && (abs(DEC0-56.38)<0.01)))
 		{
 			// sirius
-			for (int j=3; j<4; j++)
+			for (int j=2; j<4; j++)
 				myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, j, 255, 0, 0 );
 		}
 		if (((abs(RA0-37.78)<0.01) && (abs(DEC0-46.62)<0.01)))
 		{
-			for (int j=3; j<4; j++)
+			for (int j=2; j<4; j++)
 				myRenderer.drawCircle( (int) RA, 1023 + (int) DEC, j, 0, 0, 255 );
 		}
 		  
 	}
 	fclose(f);
 }
+
 

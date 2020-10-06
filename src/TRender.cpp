@@ -35,6 +35,89 @@ void TRender::plot(int x, int y, int r, int g, int b)
 	}
 }
  
+void TRender::drawLine(int xb, int yb, int xe, int ye, int r, int g, int b)
+{
+	int dx0;
+	int dy0;
+	if (xb>xe) // exchange begin and end-point
+	{ 
+	  int t;
+	  t=xb; xb=xe; xe=t;
+	  t=yb; yb=ye; ye=t;
+	}
+	dx0 = xe-xb; // dx0>=0
+	dy0 = ye-yb;
+
+	// special cases first
+	if (dx0==0 && dy0==0)
+	{
+		// point
+		plot(xb, yb, r, g, b);
+		return;
+	}
+
+	if (dx0==0)
+	{
+		// vertical line
+		if (yb<=ye)
+		{
+			for (int y=yb; y<=ye; y++) plot(xb, y, r, g, b);
+		}
+		else
+		{
+			for (int y=ye; y<=yb; y--) plot(xb, y, r, g, b);
+		}
+		return;
+	}
+
+	int x1=0;
+	int x2=xe-xb;
+	int y1=0;
+	int y2=ye-yb;
+	int dx=x2-x1; // dx>=0
+	int dy=y2-y1;
+	if (dy>=0 && abs(dy)>dx) { int t; t=x2; x2=y2; y2=t;  } // change: (xe,ye) => (ye,xe)
+	if (dy<0 && abs(dy)<=dx) { y2 = -y2; }
+	if (dy<0 && abs(dy)>dx) { int t; t=x2; x2=-y2; y2=t; } 
+	dx=x2-x1; // dx>=0
+	dy=y2-y1;
+	
+	int x=x1; 
+	int y=y1;
+	int v = (x-x1)*dy - (y-y1)*dx;
+	// Invariant I: v == (x-x1)*dy - (y-y1)*dx 
+	// dy > 0 /\ dx > 0
+	while (x<=x2)
+	{
+		int xp; // xplot
+		int yp; // yplot
+		// (y-y1) <= (x-x1)*dy/dx + 0.5 (S) /\ I /\ dx > 0 /\ dy > 0 
+		while (2*v >= dx)
+		{
+			// 2 dx (y - y1 ) - 2 dy (x - x1) <= -dx /\ I => -2v <= -dx, 
+			// so 2*v >= dx is a sufficient condition for (S)
+			v = v - dx;
+			y = y + 1;
+			// (y-y1) <= (x-x1)*dy/dx + 0.5 (S) /\ I
+		}
+		//
+		// 2*v < dx /\ I, so (x-x1)*dy/dx + 0.5 < (y-y1) + 1
+		// and (y-y1) <= (x-x1)*dy/dx + 0.5, 
+		// so
+		// (y-y1) <= (x-x1)*dy/dx + 0.5 < (y-y1) + 1
+		// where (x,y) is the valid plot data
+		if      (dy0>=0 && abs(dy0)<=dx0) { xp = xb + x; yp = yb + y; }
+		else if (dy0>=0 && abs(dy0)> dx0) { xp = xb + y; yp = yb + x; }
+		else if (dy0<0  && abs(dy0)<=dx0) { xp = xb + x; yp = yb - y; }
+		else if (dy0<0  && abs(dy0)> dx0) { xp = xb + y; yp = yb - x; }
+		plot(xp, yp, r, g, b);
+		v = v + dy;
+		x = x + 1;
+		// Invariant I holds
+	}
+};
+
+
 void TRender::drawCircle( int x0,int y0, int radius,int r,int g, int b )
 {
     int f = 1 - radius;
@@ -73,10 +156,10 @@ void TRender::drawCircle( int x0,int y0, int radius,int r,int g, int b )
 	if (radius==1)
 	{
 		   plot(x0, y0, r, g, b);
-		   //plot(x0 + 1, y0 + 1, r, g, b);
-		   //plot(x0 + 1, y0 - 1, r, g, b);
-		   //plot(x0 - 1, y0 + 1, r, g, b);
-		   //plot(x0 - 1, y0 - 1, r, g, b);
+		   plot(x0 + 1, y0 + 1, r, g, b);
+		   plot(x0 + 1, y0 - 1, r, g, b);
+		   plot(x0 - 1, y0 + 1, r, g, b);
+		   plot(x0 - 1, y0 - 1, r, g, b);
 	}
 }
 
