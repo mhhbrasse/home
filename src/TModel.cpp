@@ -212,10 +212,10 @@ void TModel::ImportModel(TModel3D& modelObject)
 
 	// copy for future transformations on original positions from loaded Model, and initial values of normals
 	// the faces are invariant
-	float minx = 1000000.0f;
-	float miny = 1000000.0f;
-	float maxx = -1000000.0f;
-	float maxy = -1000000.0f;
+	float minx = FLOAT_MAX;
+	float miny = FLOAT_MAX;
+	float maxx = FLOAT_MIN;
+	float maxy = FLOAT_MIN;
 	for (i=0;i<numberVertices;i++)
 	{
 		minx = MIN(minx,vertices[i].x);

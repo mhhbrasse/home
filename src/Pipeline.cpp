@@ -3,7 +3,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include <windows.h>
 #include <stdio.h>
-#include <math.h>
 #include "TRender.h"
 #include "TModel.h"
 #include "TDisplay.h"

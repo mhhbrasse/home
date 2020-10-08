@@ -34,7 +34,8 @@ void TRender::plot(int x, int y, int r, int g, int b)
 		fprintf(stderr, "Warning [TRender::plot]: out of range\n");
 	}
 }
- 
+
+// next method, see <>
 void TRender::drawLine(int xb, int yb, int xe, int ye, int r, int g, int b)
 {
 	int dx0;
@@ -79,6 +80,7 @@ void TRender::drawLine(int xb, int yb, int xe, int ye, int r, int g, int b)
 	int y2=ye-yb;
 	int dx=x2-x1; // dx>=0
 	int dy=y2-y1;
+	// transform to the case dy>0 and dy<dx
 	if (dy>=0 && abs(dy)>dx)      { int t; t=x2; x2=y2; y2=t;  } 
 	else if (dy<0 && abs(dy)<=dx) { y2 = -y2; }
 	else if (dy<0 && abs(dy)>dx)  { int t; t=x2; x2=-y2; y2=t; } 
@@ -123,7 +125,7 @@ void TRender::drawLine(int xb, int yb, int xe, int ye, int r, int g, int b)
 	}
 };
 
-
+// next method, see <>
 void TRender::drawCircle( int x0,int y0, int radius,int r,int g, int b )
 {
     int f = 1 - radius;
@@ -169,6 +171,51 @@ void TRender::drawCircle( int x0,int y0, int radius,int r,int g, int b )
 		   plot(x0 - 1, y0 + 1, r, g, b);
 		   plot(x0 - 1, y0 - 1, r, g, b);
 	}
+}
+
+// next method, see https://gist.github.com/bert/1085538
+void TRender::drawEllipse( int x0,int y0, int x1, int y1, int rr, int gg, int bb)
+{
+	int a = abs (x1 - x0);
+   int b = abs (y1 - y0); 
+   int b1 = b & 1; /* values of diameter */
+   long dx = 4 * (1 - a) * b * b;
+   long dy = 4 * (b1 + 1) * a * a; /* error increment */
+   long err = dx + dy + b1 * a * a;
+   long e2; /* error of 1.step */
+
+   if (x0 > x1) { x0 = x1; x1 += a; } /* if called with swapped points */
+   if (y0 > y1) y0 = y1; /* .. exchange them */
+   y0 += (b + 1) / 2;
+   y1 = y0-b1;   /* starting pixel */
+   a *= 8 * a; b1 = 8 * b * b;
+   do
+   {
+       plot (x1, y0, rr, gg, bb); /*   I. Quadrant */
+       plot (x0, y0, rr, gg, bb); /*  II. Quadrant */
+       plot (x0, y1, rr, gg, bb); /* III. Quadrant */
+       plot (x1, y1, rr, gg, bb); /*  IV. Quadrant */
+       e2 = 2 * err;
+       if (e2 >= dx)
+       {
+          x0++;
+          x1--;
+          err += dx += b1;
+       } /* x step */
+       if (e2 <= dy)
+       {
+          y0++;
+          y1--;
+          err += dy += a;
+       }  /* y step */ 
+   } while (x0 <= x1);
+   while (y0-y1 < b)
+   {  /* too early stop of flat ellipses a=1 */
+       plot (x0-1, y0, rr, gg, bb); /* -> finish tip of ellipse */
+       plot (x1+1, y0, rr, gg, bb); y0++;
+       plot (x0-1, y1, rr, gg, bb);
+       plot (x1+1, y1, rr, gg, bb); y1--;
+   }
 }
 
 TRender::TRender(int width, int height)
