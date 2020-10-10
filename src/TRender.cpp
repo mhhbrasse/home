@@ -12,6 +12,7 @@
 
 #define FLOAT_MIN (-100000.0f)
 
+
 TRender::TRender(int width, int height)
 {
 	// setup buffer 0
