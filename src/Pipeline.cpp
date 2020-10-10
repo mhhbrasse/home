@@ -7,13 +7,6 @@
 #include "TModel.h"
 #include "TDisplay.h"
 
-// experimental
-//extern void convert(char* in_filename, char* out_filename);
-//extern void convert2(char* in_filename, char* out_filename);
-//extern void createTextureFromFK6(TRender& myRenderer, char* in_filename, char* out_filename);
-//extern void createTextureFromStarCatalogDat(TRender& myRenderer, char* in_filename, char* out_filename);
-//extern void simulate(TRender& myRenderer);
-
 //const int   FRAME_WIDTH    = 4096;
 //const int   FRAME_HEIGHT   = 2048;
 
