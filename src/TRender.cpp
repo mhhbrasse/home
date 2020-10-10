@@ -33,6 +33,12 @@ TRender::TRender(int width, int height)
 	// store frame dimensions
 	frameWidth = width;
 	frameHeight = height;
+
+	// default CameraView matrix
+	vec3_t from = vec3(0,0,1);
+	vec3_t to = vec3(0,0,0);
+	vec3_t up = vec3(0,1,0);
+	mCameraView = m4_look_at(from,to,up);
 }
 
 TRender::~TRender()
@@ -114,6 +120,11 @@ void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 	renderModel( numberFaces,  numberVertices, faces, vertices, normals, px, py, qx, qy);
 }
 
+void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up)
+{
+	mCameraView = m4_look_at(from,to,up);
+}
+
 void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* verticesIn, Normal3* normalsIn, int px, int py, int qx, int qy)
 {
 	int i, color1,color2,color3;
@@ -126,11 +137,6 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 	aLightWorld.nx = 0.0f;
 	aLightWorld.ny = 0.0f;
 	aLightWorld.nz = 1.0f;
-	// default CameraView matrix
-	vec3_t from = vec3(0,0,1);
-	vec3_t to = vec3(0,0,0);
-	vec3_t up = vec3(0,1,0);
-	mat4_t mCameraView = m4_look_at(from,to,up);
 	// Convert Vertices and Normals to cameraView
 	for (i=0; i<numberVertices; i++)
 	{
@@ -181,7 +187,7 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 				px, py, qx, qy);
 		}
 	}	
-
+	//
 	if (vertices!=NULL) free(vertices);
 	if (normals!=NULL) free(normals);
 }

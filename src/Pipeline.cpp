@@ -72,7 +72,9 @@ int main(int argc, char **argv)
 	
 	// Create and Initalize the Renderer 
 	TRender myRenderer( frameWidth, frameHeight );
-	
+	myRenderer.setCamera(vec3(0,0,1), vec3(0,0,0), vec3(0,1,0));
+	//myRenderer.setCamera(vec3(1,0,1), vec3(0,0,0), vec3(0,1,0));
+
 #if 1
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
