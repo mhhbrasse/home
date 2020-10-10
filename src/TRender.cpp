@@ -117,20 +117,21 @@ void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* verticesIn, Normal3* normalsIn, int px, int py, int qx, int qy)
 {
 	int i, color1,color2,color3;
+	//
+	Vertex3 *vertices = (Vertex3*) calloc(numberVertices, sizeof(Vertex3));
+	Normal3 *normals  = (Normal3*) calloc(numberVertices, sizeof(Normal3));
 	Normal3 aLight;
+	// default light 
 	Normal3 aLightWorld;
 	aLightWorld.nx = 0.0f;
 	aLightWorld.ny = 0.0f;
 	aLightWorld.nz = 1.0f;
-	// set camera View matrix
+	// default CameraView matrix
 	vec3_t from = vec3(0,0,1);
 	vec3_t to = vec3(0,0,0);
 	vec3_t up = vec3(0,1,0);
 	mat4_t mCameraView = m4_look_at(from,to,up);
-	//
-	Vertex3 *vertices = (Vertex3*) calloc(numberVertices, sizeof(Vertex3));
-	Normal3 *normals  = (Normal3*) calloc(numberVertices, sizeof(Normal3));
-	//convert to cameraView
+	// Convert Vertices and Normals to cameraView
 	for (i=0; i<numberVertices; i++)
 	{
 		Vertex3 p0 = verticesIn[i];
@@ -143,10 +144,10 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 		rr = m4_mul_dir(mCameraView, nn);
 		normals[i].nx = rr.x; normals[i].ny = rr.y; normals[i].nz=rr.z;
 	}
-	// also convert aLightWorld to aLight(Camera)
-	vec3_t eyeWorld = vec3(aLightWorld.nx,aLightWorld.ny,aLightWorld.nz);
-	vec3_t eyeCamera = m4_mul_dir(mCameraView, eyeWorld);
-	aLight.nx = eyeCamera.x; aLight.ny = eyeCamera.y; aLight.nz = eyeCamera.z; 
+	// Convert aLightWorld to aLight(Camera)
+	vec3_t lightWorld = vec3(aLightWorld.nx,aLightWorld.ny,aLightWorld.nz);
+	vec3_t lightCamera = m4_mul_dir(mCameraView, lightWorld);
+	aLight.nx = lightCamera.x; aLight.ny = lightCamera.y; aLight.nz = lightCamera.z; 
 	//
 	for (i=0; i<numberFaces; i++)
 	{
