@@ -8,10 +8,11 @@
 #include "TDisplay.h"
 
 // experimental
-extern void convert(char* in_filename, char* out_filename);
-extern void convert2(char* in_filename, char* out_filename);
-extern void createTextureFromFK6(TRender& myRenderer, char* in_filename, char* out_filename);
-extern void createTextureFromStarCatalogDat(TRender& myRenderer, char* in_filename, char* out_filename);
+//extern void convert(char* in_filename, char* out_filename);
+//extern void convert2(char* in_filename, char* out_filename);
+//extern void createTextureFromFK6(TRender& myRenderer, char* in_filename, char* out_filename);
+//extern void createTextureFromStarCatalogDat(TRender& myRenderer, char* in_filename, char* out_filename);
+//extern void simulate(TRender& myRenderer);
 
 //const int   FRAME_WIDTH    = 4096;
 //const int   FRAME_HEIGHT   = 2048;
@@ -42,6 +43,9 @@ int getNumberObjects(TModel3D objectData[])
 	while (objectData[n].objectID >= 0) n++;
 	return n;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -75,9 +79,6 @@ int main(int argc, char **argv)
 	
 	// Create and Initalize the Renderer 
 	TRender myRenderer( frameWidth, frameHeight );
-	//createTextureFromFK6(myRenderer, "..\\fk6_xls.csv","");
-	//createTextureFromStarCatalogDat(myRenderer, "..\\starcatalog.dat","");
-	//myRenderer.swapBuffers();
 	
 #if 1
 	// Render the Model through successive animation steps
@@ -86,6 +87,8 @@ int main(int argc, char **argv)
 		myRenderer.clearBuffers();
 		myRenderer.transformModelX( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
+		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
+		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );
 		myRenderer.swapBuffers();		
 	}
@@ -96,6 +99,8 @@ int main(int argc, char **argv)
 		myRenderer.clearBuffers();
 		myRenderer.transformModelY( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
+		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
+		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );
 		myRenderer.swapBuffers();		
 	}
@@ -106,6 +111,8 @@ int main(int argc, char **argv)
 		myRenderer.clearBuffers();
 		myRenderer.transformModelZ( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
+		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
+		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );		
 		myRenderer.swapBuffers();
 	}

@@ -283,17 +283,24 @@ void TRender::transformModelZ( TModel &model, float angle )
 
 
 
-void TRender::renderModel(TModel& model)
+void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 {
 	int numberFaces = model.getNumberFaces();
 	int numberVertices = model.getNumberVertices();
 	Faces* faces = model.getFaces();
 	Vertex3* vertices = model.getVertices();
 	Normal3* normals = model.getNormals() ;
-	renderModel( numberFaces,  numberVertices, faces, vertices, normals);
+	if (px<0 || py<0 || qx<0 || qy<0)
+	{
+		px = 0;
+		py = 0;
+		qx = frameWidth;
+		qy = frameHeight;
+	}
+	renderModel( numberFaces,  numberVertices, faces, vertices, normals, px, py, qx, qy);
 }
 
-void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* vertices, Normal3* normals)
+void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* vertices, Normal3* normals, int px, int py, int qx, int qy)
 {
 	int color1,color2,color3;
 	int i;
@@ -329,7 +336,8 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 				vertices[faces[i].v0], vertices[faces[i].v1], vertices[faces[i].v2],
 				normals[faces[i].v0], normals[faces[i].v1], normals[faces[i].v2],
 				//normals[i], normals[i], normals[i],
-				color1,color2,color3, faces[i].k0, faces[i].k1, faces[i].k2);
+				color1,color2,color3, faces[i].k0, faces[i].k1, faces[i].k2,
+				px, py, qx, qy);
 		}
 	}	
 }
@@ -369,7 +377,8 @@ void TRender::saveScene()
 }
 
 
-void TRender::scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, Normal3 n1,  int color1, int color2, int k0, int k1, int k2)
+void TRender::scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, Normal3 n1,  int color1, int color2, int k0, int k1, int k2,
+					int px, int py, int qx, int qy)
 {
 	int i;
 	Normal3 ni;
@@ -398,29 +407,35 @@ void TRender::scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, No
 			if (light>1.0f) light=1.0f;
 		}
 		
-		if (light > 0.0f)
-		{			
-			if (z>zBuffer[ (frameHeight-y-1)*frameWidth + i ]) 
-			{
-				if (color<0.0) color = 0.0f;
-				if (color>255.0) color = 255.0f;
-				unsigned char ucolor_r = (unsigned char) (color*k0/255.0f);
-				unsigned char ucolor_g = (unsigned char) (color*k1/255.0f);
-				unsigned char ucolor_b = (unsigned char) (color*k2/255.0f);
+		//printf("px, py, qx, qy = %d %d %d %d\n", px,py,qx,qy);
+		if (px<=i && i<qx && py<=y && y<=qy)
+		{
+			// within clip area
+			if (light > 0.0f)
+			{			
+				if (z>zBuffer[ (frameHeight-y-1)*frameWidth + i ]) 
+				{
+					if (color<0.0) color = 0.0f;
+					if (color>255.0) color = 255.0f;
+					unsigned char ucolor_r = (unsigned char) (color*k0/255.0f);
+					unsigned char ucolor_g = (unsigned char) (color*k1/255.0f);
+					unsigned char ucolor_b = (unsigned char) (color*k2/255.0f);
 				
-				zBuffer[ (frameHeight-y-1)*frameWidth + i ] = z;
-				// changed code to be compatible with Windows framebuffer
-				//gBuffer[(frameHeight-y-1)*frameWidth*3 + i*3] = ucolor;
-				//gBuffer[(frameHeight-y-1)*frameWidth*3 + i*3 + 1] = ucolor;
-				//gBuffer[(frameHeight-y-1)*frameWidth*3 + i*3 + 2] = ucolor;
-				//gBuffer[(frameHeight-y-1)*frameWidth + i] = RGB(ucolor_b, ucolor_g, ucolor_r);
-				gBuffer[(frameHeight-y-1)*frameWidth + i] = ucolor_r<<16 | ucolor_g<<8 | ucolor_b; 
+					zBuffer[ (frameHeight-y-1)*frameWidth + i ] = z;
+					// changed code to be compatible with Windows framebuffer
+					//gBuffer[(frameHeight-y-1)*frameWidth*3 + i*3] = ucolor;
+					//gBuffer[(frameHeight-y-1)*frameWidth*3 + i*3 + 1] = ucolor;
+					//gBuffer[(frameHeight-y-1)*frameWidth*3 + i*3 + 2] = ucolor;
+					//gBuffer[(frameHeight-y-1)*frameWidth + i] = RGB(ucolor_b, ucolor_g, ucolor_r);
+					gBuffer[(frameHeight-y-1)*frameWidth + i] = ucolor_r<<16 | ucolor_g<<8 | ucolor_b; 
+				}
 			}
 		}
 	}
 }
 
-void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Normal3 n1, Normal3 n2, int color0, int color1, int color2, int k0, int k1, int k2)
+void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Normal3 n1, Normal3 n2, int color0, int color1, int color2, int k0, int k1, int k2,
+							 int px, int py, int qx, int qy)
 {
 	int v0_x,v0_y;
 	int v1_x,v1_y;
@@ -436,6 +451,7 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 	int color01;
 	int color02;
 
+	
 	// sort vertices of face (in non-screen coordinates :()
 	if (v1.y > v2.y) { Vertex3 tmp = v1; v1 = v2; v2 = tmp; Normal3 tmp1 = n1; n1 = n2; n2 = tmp1; int tmp2 = color1; color1 = color2; color2 = tmp2; } 
 	if (v0.y > v1.y) { Vertex3 tmp = v0; v0 = v1; v1 = tmp; Normal3 tmp1 = n0; n0 = n1; n1 = tmp1; int tmp2 = color0; color0 = color1; color1 = tmp2; } 
@@ -447,7 +463,10 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 	v1_y = toScreen(v1.y);	
 	v2_x = toScreen(v2.x);
 	v2_y = toScreen(v2.y);
+	// { v0_y <= v1_y <= v2_y }
 
+	if ( v2_y < py || v0_y >qy) return; // added 10-10-2020
+	
 	// { v0_y <= v1_y <= v2_y }
 	ys = v0_y;
 	e01 = 0;  
@@ -471,8 +490,8 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 		// render (x,y)::v0_y <= y < v1_y for line (0,1)
 		// render (x,y)::v0_y <= y < v1_y for line (0,2)
 		
-		if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2);
-		else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2);
+		if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2,px,py,qx,qy);
+		else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2,px,py,qx,qy);
 		//e01 = e01 - dx01;
 		//e02 = e02 - dx02;
 		//while (e01 + dy01 <= 0) { e01 += dy01; x01++; }
@@ -531,8 +550,8 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 		// render (x,y)::v1_y <= y < v2_y for line (1,2)
 		// render (x,y)::v1_y <= y < v2_y for line (0,2)
 		
-		if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2);
-		else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2);
+		if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2,px,py,qx,qy);
+		else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2,px,py,qx,qy);
 		//e01 = e01 - dx01;
 		//e02 = e02 - dx02;
 		//while (e01 + dy01 <= 0) { e01 += dy01; x01++; }
@@ -589,8 +608,8 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 			color01 = color0;
 			color02 = color1;
 
-			if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2);
-			else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2);
+			if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2,px,py,qx,qy);
+			else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2,px,py,qx,qy);
 		
 			x01 = v1_x;
 			x02 = v2_x;
@@ -602,8 +621,8 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 			color02 = color2;
 
 
-			if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2);
-			else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2);
+			if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2,px,py,qx,qy);
+			else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2,px,py,qx,qy);
 		
 		}
 		else
@@ -616,8 +635,8 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 			color02 = color2;
 
 
-			if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2);
-			else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2);
+			if (x01<=x02) scanline(ys,x01,x02,z01,z02,n01,n02,color01,color02,k0,k1,k2,px,py,qx,qy);
+			else if (x01>x02) scanline(ys,x02,x01,z02,z01,n02,n01,color02,color01,k0,k1,k2,px,py,qx,qy);
 		
 		}
 	}	
