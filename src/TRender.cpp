@@ -42,6 +42,24 @@ TRender::~TRender()
 	zBuffer = NULL;
 }
 
+void TRender::plot(int x, int y, int r, int g, int b) 
+{
+	//bool result = false;
+	if (0<=x && x<frameWidth) 
+	{
+		if (0<=y && y<frameHeight) 
+		{
+			unsigned char ucolor_r = (unsigned char ) r;
+			unsigned char ucolor_g = (unsigned char ) g;
+			unsigned char ucolor_b = (unsigned char ) b;
+			gBuffer[(frameHeight-y-1)*frameWidth + x] = ucolor_r<<16 | ucolor_g<<8 | ucolor_b; 
+			//result = true;
+		}
+	}	
+	//return result;
+}
+
+
 void TRender::clearBuffers()
 {
 	for (int i=0; i<frameWidth*frameHeight; i++) 

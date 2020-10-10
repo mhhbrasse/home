@@ -1,32 +1,15 @@
 #include <Windows.h>
+#include "TRender.h"
 #include "TPlot.h"
 
-TPlot::TPlot(TRender& myRenderer)
-{ 
-	frameWidth = myRenderer.getFrameWidth();
-	frameHeight = myRenderer.getFrameHeight();
-	colorBuffer = myRenderer.getBuffer();
-}
+TPlot::TPlot(TRender* renderer) { mRenderer = renderer; }
 
 TPlot::~TPlot() {}
 
-bool TPlot::plot(int x, int y, int r, int g, int b) 
+void TPlot::plot(int x, int y, int r, int g, int b) 
 {
-	bool result = false;
-	if (0<=x && x<frameWidth) 
-	{
-		if (0<=y && y<frameHeight) 
-		{
-			unsigned char ucolor_r = (unsigned char ) r;
-			unsigned char ucolor_g = (unsigned char ) g;
-			unsigned char ucolor_b = (unsigned char ) b;
-			colorBuffer[(frameHeight-y-1)*frameWidth + x] = ucolor_r<<16 | ucolor_g<<8 | ucolor_b; 
-			result = true;
-		}
-	}	
-	return result;
+	mRenderer->plot(x,y,r,g,b);
 }
-
 
 // next method, see <>
 void TPlot::drawLine(int xb, int yb, int xe, int ye, int r, int g, int b)

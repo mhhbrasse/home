@@ -20,10 +20,8 @@ public:
 		void clearBuffers(); // clear current active color buffer and Z buffer
 		void swapBuffers();  // swap active color bufers and Z buffers 
 		COLORREF* getBuffer() { return gBuffer; } 
-		COLORREF getBuffer(int i, int j) { return gBuffer[j*frameWidth+i]; } 
-		int getFrameWidth() { return frameWidth; } 
-		int getFrameHeight() { return frameHeight; } 
-			
+		void plot(int x, int y, int r, int g, int b);
+		
 		void transformModelX( TModel &model, float angle );
 		void transformModelY( TModel &model, float angle );
 		void transformModelZ( TModel &model, float angle );
