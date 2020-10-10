@@ -14,6 +14,7 @@
     <ClCompile Include="..\src\Pipeline.cpp" />
     <ClCompile Include="..\src\TDisplay.cpp" />
     <ClCompile Include="..\src\TModel.cpp" />
+    <ClCompile Include="..\src\TPlot.cpp" />
     <ClCompile Include="..\src\TRender.cpp" />
     <ClCompile Include="..\src\Utility.cpp" />
   </ItemGroup>
@@ -22,6 +23,7 @@
     <ClInclude Include="..\inc\Math3D.h" />
     <ClInclude Include="..\inc\TDisplay.h" />
     <ClInclude Include="..\inc\TModel.h" />
+    <ClInclude Include="..\inc\TPlot.h" />
     <ClInclude Include="..\inc\TRender.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

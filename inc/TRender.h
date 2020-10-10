@@ -21,15 +21,12 @@ public:
 		void swapBuffers();  // swap active color bufers and Z buffers 
 		COLORREF* getBuffer() { return gBuffer; } 
 		COLORREF getBuffer(int i, int j) { return gBuffer[j*frameWidth+i]; } 
+		int getFrameWidth() { return frameWidth; } 
+		int getFrameHeight() { return frameHeight; } 
 			
 		void transformModelX( TModel &model, float angle );
 		void transformModelY( TModel &model, float angle );
 		void transformModelZ( TModel &model, float angle );
-
-		void plot(int x, int y, int r, int g, int b);
-		void drawCircle( int x0,int y0,int radius, int r,int g, int b );
-		void drawLine(int xb, int yb, int xe, int ye,int r,int g, int b );
-		void drawEllipse( int x0,int y0, int x1, int y1, int r, int g, int b );
 
 private:
 		void scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, Normal3 n1,  int color1, int color2, int k0, int k1, int k2, int px, int py, int qx, int qy);
