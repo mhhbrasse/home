@@ -9,6 +9,7 @@
 #include "TRender.h"
 #include "TModel.h"
 #include "Math3D.h"
+#include <stdlib.h> // calloc
 
 #define FLOAT_MIN (-100000.0f)
 
@@ -113,30 +114,56 @@ void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 	renderModel( numberFaces,  numberVertices, faces, vertices, normals, px, py, qx, qy);
 }
 
-void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* vertices, Normal3* normals, int px, int py, int qx, int qy)
+void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* verticesIn, Normal3* normalsIn, int px, int py, int qx, int qy)
 {
-	int color1,color2,color3;
-	int i;
-	Normal3 anEye;
-	anEye.nx = 0.0f;
-	anEye.ny = 0.0f;
-	anEye.nz = 1.0f;
+	int i, color1,color2,color3;
+	Normal3 aLight;
+	Normal3 aLightWorld;
+	aLightWorld.nx = 0.0f;
+	aLightWorld.ny = 0.0f;
+	aLightWorld.nz = 1.0f;
+	// set camera View matrix
+	vec3_t from = vec3(0,0,1);
+	vec3_t to = vec3(0,0,0);
+	vec3_t up = vec3(0,1,0);
+	mat4_t mCameraView = m4_look_at(from,to,up);
+	//
+	Vertex3 *vertices = (Vertex3*) calloc(numberVertices, sizeof(Vertex3));
+	Normal3 *normals  = (Normal3*) calloc(numberVertices, sizeof(Normal3));
+	//convert to cameraView
+	for (i=0; i<numberVertices; i++)
+	{
+		Vertex3 p0 = verticesIn[i];
+		vec3_t pp = vec3(p0.x,p0.y,p0.z);
+		vec3_t rr = m4_mul_pos(mCameraView, pp);
+		vertices[i].x = rr.x; vertices[i].y = rr.y; vertices[i].z=rr.z;
+
+		Normal3 n0 = normalsIn[i];
+		vec3_t nn = vec3(n0.nx,n0.ny,n0.nz);
+		rr = m4_mul_dir(mCameraView, nn);
+		normals[i].nx = rr.x; normals[i].ny = rr.y; normals[i].nz=rr.z;
+	}
+	// also convert aLightWorld to aLight(Camera)
+	vec3_t eyeWorld = vec3(aLightWorld.nx,aLightWorld.ny,aLightWorld.nz);
+	vec3_t eyeCamera = m4_mul_dir(mCameraView, eyeWorld);
+	aLight.nx = eyeCamera.x; aLight.ny = eyeCamera.y; aLight.nz = eyeCamera.z; 
+	//
 	for (i=0; i<numberFaces; i++)
 	{
 		float light;
-		light = anEye.nx*normals[faces[i].v0].nx + anEye.ny*normals[faces[i].v0].ny + anEye.nz*normals[faces[i].v0].nz;
+		light = aLight.nx*normals[faces[i].v0].nx + aLight.ny*normals[faces[i].v0].ny + aLight.nz*normals[faces[i].v0].nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
 		//color1 = (int) floor(0.0f+light*(255.0f-0.0f));
 		color1 = (int) floor(10.0f+light*(255.0f-10.0f));
 
-		light = anEye.nx*normals[faces[i].v1].nx + anEye.ny*normals[faces[i].v1].ny + anEye.nz*normals[faces[i].v1].nz;
+		light = aLight.nx*normals[faces[i].v1].nx + aLight.ny*normals[faces[i].v1].ny + aLight.nz*normals[faces[i].v1].nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
 		//color2 = (int) floor(0.0f+light*(255.0f-0.0f));
 		color2 = (int) floor(10.0f+light*(255.0f-10.0f));
 
-		light = anEye.nx*normals[faces[i].v2].nx + anEye.ny*normals[faces[i].v2].ny + anEye.nz*normals[faces[i].v2].nz;
+		light = aLight.nx*normals[faces[i].v2].nx + aLight.ny*normals[faces[i].v2].ny + aLight.nz*normals[faces[i].v2].nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
 		//color3 = (int) floor(0.0f+light*(255.0f-0.0f));
@@ -153,6 +180,9 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 				px, py, qx, qy);
 		}
 	}	
+
+	if (vertices!=NULL) free(vertices);
+	if (normals!=NULL) free(normals);
 }
 
 				
