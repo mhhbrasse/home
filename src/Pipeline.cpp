@@ -49,6 +49,8 @@ int main(int argc, char **argv)
 	int displayHeight = DISPLAY_HEIGHT;
 	int ID = -1;
 	int numberModels = getNumberObjects(objectData);
+	bool usePerspective = true;
+	bool useLogging = true;
 
 	// IO console interfacing
 	if (argc>1) 
@@ -72,10 +74,8 @@ int main(int argc, char **argv)
 	
 	// Create and Initalize the Renderer 
 	TRender myRenderer( frameWidth, frameHeight );
-	myRenderer.setCamera(vec3(0,0,1), vec3(0,0,0), vec3(0,1,0));
-	//myRenderer.setCamera(vec3(1,0,1), vec3(0,0,0), vec3(0,1,0));
+	myRenderer.setCamera(vec3(0,0,10), vec3(0,0,0), vec3(0,1,0), usePerspective, useLogging);
 
-#if 1
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
@@ -87,7 +87,6 @@ int main(int argc, char **argv)
 		myRenderer.display( myDisplay );
 		myRenderer.swapBuffers();		
 	}
-
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
@@ -99,7 +98,6 @@ int main(int argc, char **argv)
 		myRenderer.display( myDisplay );
 		myRenderer.swapBuffers();		
 	}
-
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
@@ -111,9 +109,6 @@ int main(int argc, char **argv)
 		myRenderer.display( myDisplay );		
 		myRenderer.swapBuffers();
 	}
-
-#endif
-
 	// Write before-last rendered scene to disk
 	myRenderer.swapBuffers();
 	myRenderer.saveScene();

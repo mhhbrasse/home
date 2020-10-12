@@ -12,7 +12,7 @@
 #include <stdlib.h> // calloc
 
 #define FLOAT_MIN (-100000.0f)
-
+#define SQR(x) ((x)*(x))
 
 TRender::TRender(int width, int height)
 {
@@ -34,11 +34,11 @@ TRender::TRender(int width, int height)
 	frameWidth = width;
 	frameHeight = height;
 
-	// default CameraView matrix
-	vec3_t from = vec3(0,0,1);
+	// set default CameraView matrix
+	vec3_t from = vec3(0,0,10);
 	vec3_t to = vec3(0,0,0);
 	vec3_t up = vec3(0,1,0);
-	mCameraView = m4_look_at(from,to,up);
+	setCamera(from,to,up,false,false);
 }
 
 TRender::~TRender()
@@ -120,9 +120,33 @@ void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 	renderModel( numberFaces,  numberVertices, faces, vertices, normals, px, py, qx, qy);
 }
 
-void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up)
+void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up, bool usePerspective, bool info)
 {
+	mat4_t perspectiveMatrix=m4_identity();
+	mat4_t transleer = m4_translation(vec3(0.0,0.0,0.0));
 	mCameraView = m4_look_at(from,to,up);
+	mCameraDistance = (float) (sqrt(SQR(from.x-to.x)+SQR(from.y-to.y)+SQR(from.z-to.z)));
+	if (usePerspective && info)
+	{
+		printf("[Info][TRender::setCamera]: automatic Field Of View is %.2f degrees\n", atan(2.0f/mCameraDistance)*180.0/M_PI);
+	}
+	// set auto perspective transform 
+	if (usePerspective)
+	{
+		perspectiveMatrix = m4_perspective((float) (atanf(2.0f/mCameraDistance)*180.0f/M_PI), 1.0f, mCameraDistance-1.0f, mCameraDistance+1.0f);
+		// for perspective projection, move all z-values from near/far of [1..-1] to [0..-2], aligned with ortho-projection (see scanline()).
+		transleer = m4_translation(vec3(0.0,0.0,-1.0));
+	}
+	mPerspectiveCameraView = m4_mul(transleer,m4_mul(perspectiveMatrix,mCameraView));
+	// due to perspective transform definition in Math3D.h for near/far plane, use negated z
+	if (usePerspective)
+	{
+		mPerspectiveCameraView.m02 = -mPerspectiveCameraView.m02;
+		mPerspectiveCameraView.m12 = -mPerspectiveCameraView.m12;
+		mPerspectiveCameraView.m22 = -mPerspectiveCameraView.m22;
+		//mPerspectiveCameraView.m32 = 1.0f;
+	}
+	
 }
 
 void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* verticesIn, Normal3* normalsIn, int px, int py, int qx, int qy)
@@ -142,8 +166,9 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 	{
 		Vertex3 p0 = verticesIn[i];
 		vec3_t pp = vec3(p0.x,p0.y,p0.z);
-		vec3_t rr = m4_mul_pos(mCameraView, pp);
-		vertices[i].x = rr.x; vertices[i].y = rr.y; vertices[i].z=rr.z;
+		vec3_t rr = m4_mul_pos(mPerspectiveCameraView, pp);
+		vertices[i].x = rr.x; vertices[i].y = rr.y; vertices[i].z=rr.z; 
+		//printf("z is %f\n", rr.z);
 
 		Normal3 n0 = normalsIn[i];
 		vec3_t nn = vec3(n0.nx,n0.ny,n0.nz);
@@ -258,7 +283,7 @@ void TRender::scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, No
 		}
 		
 		//printf("px, py, qx, qy = %d %d %d %d\n", px,py,qx,qy);
-		if (px<=i && i<qx && py<=y && y<=qy)
+		if (px<=i && i<qx && py<=y && y<=qy && z<=0.0) 
 		{
 			// within clip area
 			if (light > 0.0f)
@@ -301,11 +326,13 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 	int color01;
 	int color02;
 
-	
+
 	// sort vertices of face (in non-screen coordinates :()
 	if (v1.y > v2.y) { Vertex3 tmp = v1; v1 = v2; v2 = tmp; Normal3 tmp1 = n1; n1 = n2; n2 = tmp1; int tmp2 = color1; color1 = color2; color2 = tmp2; } 
 	if (v0.y > v1.y) { Vertex3 tmp = v0; v0 = v1; v1 = tmp; Normal3 tmp1 = n0; n0 = n1; n1 = tmp1; int tmp2 = color0; color0 = color1; color1 = tmp2; } 
 	if (v1.y > v2.y) { Vertex3 tmp = v1; v1 = v2; v2 = tmp; Normal3 tmp1 = n1; n1 = n2; n2 = tmp1; int tmp2 = color1; color1 = color2; color2 = tmp2; } 
+	// { v0_y <= v1_y <= v2_y }
+
 	// scale/translate to screen coordinates	
 	v0_x = toScreen(v0.x);
 	v0_y = toScreen(v0.y);	
