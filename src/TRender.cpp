@@ -123,30 +123,14 @@ void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up, bool usePerspective, bool info)
 {
 	mat4_t perspectiveMatrix=m4_identity();
-	mat4_t transleer = m4_translation(vec3(0.0,0.0,0.0));
 	mCameraView = m4_look_at(from,to,up);
 	mCameraDistance = (float) (sqrt(SQR(from.x-to.x)+SQR(from.y-to.y)+SQR(from.z-to.z)));
 	if (usePerspective && info)
 	{
 		printf("[Info][TRender::setCamera]: automatic Field Of View is %.2f degrees\n", atan(2.0f/mCameraDistance)*180.0/M_PI);
+		perspectiveMatrix = m4_perspective2((float) (atanf(2.0f/mCameraDistance)*180.0f/M_PI), 1.0f, mCameraDistance-1.0f, mCameraDistance+1.0f);
 	}
-	// set auto perspective transform 
-	if (usePerspective)
-	{
-		perspectiveMatrix = m4_perspective((float) (atanf(2.0f/mCameraDistance)*180.0f/M_PI), 1.0f, mCameraDistance-1.0f, mCameraDistance+1.0f);
-		// for perspective projection, move all z-values from near/far of [1..-1] to [0..-2], aligned with ortho-projection (see scanline()).
-		transleer = m4_translation(vec3(0.0,0.0,-1.0));
-	}
-	mPerspectiveCameraView = m4_mul(transleer,m4_mul(perspectiveMatrix,mCameraView));
-	// due to perspective transform definition in Math3D.h for near/far plane, use negated z
-	if (usePerspective)
-	{
-		mPerspectiveCameraView.m02 = -mPerspectiveCameraView.m02;
-		mPerspectiveCameraView.m12 = -mPerspectiveCameraView.m12;
-		mPerspectiveCameraView.m22 = -mPerspectiveCameraView.m22;
-		//mPerspectiveCameraView.m32 = 1.0f;
-	}
-	
+	mPerspectiveCameraView = m4_mul(perspectiveMatrix,mCameraView);
 }
 
 void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* verticesIn, Normal3* normalsIn, int px, int py, int qx, int qy)

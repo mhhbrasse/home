@@ -441,6 +441,21 @@ inline mat4_t m4_perspective(float vertical_field_of_view_in_deg, float aspect_r
 	);
 }
 
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix
+// adapted though
+inline mat4_t m4_perspective2(float vertical_field_of_view_in_deg, float aspect_ratio, float near_view_distance, float far_view_distance) {
+	float fovy_in_rad = (float) (vertical_field_of_view_in_deg / 180 * M_PI);
+	float f = 1.0f / tanf(fovy_in_rad / 2.0f);
+	float ar = aspect_ratio;
+	float nd = near_view_distance, fd = far_view_distance;
+	
+	return mat4(
+		 f / ar,           0,                0,                0,
+		 0,                f,                0,                0,
+		 0,                0,               -(fd)/(nd-fd),  -(fd*nd)/(nd-fd),
+		 0,                0,               -1,                0
+	);
+}
 /**
  * Builds a transformation matrix for a camera that looks from `from` towards
  * `to`. `up` defines the direction that's upwards for the camera. All three
