@@ -123,13 +123,15 @@ void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up, bool usePerspective, bool info)
 {
 	mat4_t perspectiveMatrix=m4_identity();
-	mCameraView = m4_look_at(from,to,up);
+	mCameraView = m4_look_at ( from, to, up );
 	mCameraDistance = (float) (sqrt(SQR(from.x-to.x)+SQR(from.y-to.y)+SQR(from.z-to.z)));
-	if (usePerspective && info)
+	if (usePerspective)
 	{
 		float fov = (float) (atan(2.0f/mCameraDistance)*180.0/M_PI);
-		printf("[Info][TRender::setCamera]: automatic Field Of View is %.2f degrees\n", fov);
 		perspectiveMatrix = m4_perspective2(fov, 1.0f, mCameraDistance-1.0f, mCameraDistance+1.0f);
+		if (info) {
+			printf("[Info][TRender::setCamera]: automatic Field Of View is set to %.2f degrees\n", fov);
+		}
 	}
 	mPerspectiveCameraView = m4_mul(perspectiveMatrix,mCameraView);
 }

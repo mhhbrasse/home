@@ -214,8 +214,10 @@ void TModel::ImportModel(TModel3D& modelObject)
 	// the faces are invariant
 	float minx = FLOAT_MAX;
 	float miny = FLOAT_MAX;
+	float minz = FLOAT_MAX;
 	float maxx = FLOAT_MIN;
 	float maxy = FLOAT_MIN;
+	float maxz = FLOAT_MIN;
 	for (i=0;i<numberVertices;i++)
 	{
 		minx = MIN(minx,vertices[i].x);
@@ -223,11 +225,14 @@ void TModel::ImportModel(TModel3D& modelObject)
 
 		miny = MIN(miny,vertices[i].y);
 		maxy = MAX(maxy,vertices[i].y);
+
+		minz = MIN(minz,vertices[i].z);
+		maxz = MAX(maxz,vertices[i].z);
 	}		
 
 	if (modelZoomFactor <= 0.0f)
 	{
-		zoomFactor = (MAX((maxx-minx),(maxy-miny)))/1.25f;
+		zoomFactor = (MAX((maxz-minz), MAX((maxx-minx),(maxy-miny))))/1.00f;
 	}
 	else
 	{
