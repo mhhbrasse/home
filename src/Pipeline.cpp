@@ -81,39 +81,37 @@ int main(int argc, char **argv)
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
+		myRenderer.swapBuffers();		
 		myRenderer.clearBuffers();
 		myRenderer.transformModelX( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
 		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
 		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );
-		myRenderer.swapBuffers();		
 	}
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
+		myRenderer.swapBuffers();		
 		myRenderer.clearBuffers();
 		myRenderer.transformModelY( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
 		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
 		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );
-		myRenderer.swapBuffers();		
 	}
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
+		myRenderer.swapBuffers();
 		myRenderer.clearBuffers();
 		myRenderer.transformModelZ( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
 		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
 		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );		
-		myRenderer.swapBuffers();
 	}
-	// Write before-last rendered scene to disk
-	myRenderer.swapBuffers();
+	// Write last rendered scene to disk
 	myRenderer.saveScene();
-
 	return 0;
 }

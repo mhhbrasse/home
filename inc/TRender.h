@@ -20,7 +20,7 @@ public:
 		void display( TDisplay aDisplay) {	aDisplay.display( getBuffer(), frameWidth, frameHeight ); }
 		void saveScene();
 		void clearBuffers(); // clear current active color buffer and Z buffer
-		void swapBuffers();  // swap active color bufers and Z buffers 
+		void swapBuffers();  // swap active color buffers and Z buffers 
 		COLORREF* getBuffer() { return gBuffer; } 
 		void plot(int x, int y, int r, int g, int b);
 		

@@ -14,6 +14,9 @@
 #define FLOAT_MIN (-100000.0f)
 #define SQR(x) ((x)*(x))
 
+#define MIN(a,b) ((b)>(a) ? (a) : (b))
+#define MAX(a,b) ((a)>(b) ? (a) : (b))
+
 TRender::TRender(int width, int height)
 {
 	// setup buffer 0
@@ -184,20 +187,20 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 		light = aLight.nx*normals[faces[i].v0].nx + aLight.ny*normals[faces[i].v0].ny + aLight.nz*normals[faces[i].v0].nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
-		//color1 = (int) floor(0.0f+light*(255.0f-0.0f));
-		color1 = (int) floor(10.0f+light*(255.0f-10.0f));
+		color1 = (int) floor(0.0f+light*(255.0f-0.0f));
+		//color1 = (int) floor(10.0f+light*(255.0f-10.0f)); // interacts with next if-statement
 
 		light = aLight.nx*normals[faces[i].v1].nx + aLight.ny*normals[faces[i].v1].ny + aLight.nz*normals[faces[i].v1].nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
-		//color2 = (int) floor(0.0f+light*(255.0f-0.0f));
-		color2 = (int) floor(10.0f+light*(255.0f-10.0f));
+		color2 = (int) floor(0.0f+light*(255.0f-0.0f));
+		//color2 = (int) floor(10.0f+light*(255.0f-10.0f)); // interacts with next if-statement
 
 		light = aLight.nx*normals[faces[i].v2].nx + aLight.ny*normals[faces[i].v2].ny + aLight.nz*normals[faces[i].v2].nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
-		//color3 = (int) floor(0.0f+light*(255.0f-0.0f));
-		color3 = (int) floor(10.0f+light*(255.0f-10.0f));
+		color3 = (int) floor(0.0f+light*(255.0f-0.0f));
+		//color3 = (int) floor(10.0f+light*(255.0f-10.0f)); // interacts with next if-statement
 						
 		if (color1>0 || color2>0 || color3>0)
 		{
@@ -280,10 +283,8 @@ void TRender::scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, No
 			if (light>1.0f) light=1.0f;
 		}
 		
-		//printf("px, py, qx, qy = %d %d %d %d\n", px,py,qx,qy);
-		if (px<=i && i<qx && py<=y && y<=qy && z<=0.0) 
+		if (px<=i && i<qx && py<=y && y<=qy && z<=0.0) // within clip area
 		{
-			// within clip area
 			if (light > 0.0f)
 			{			
 				if (z>zBuffer[ (frameHeight-y-1)*frameWidth + i ]) 
@@ -516,9 +517,6 @@ void TRender::RenderTriangle(Vertex3 v0, Vertex3 v1, Vertex3 v2, Normal3 n0, Nor
 		}
 	}	
 }
-
-#define MIN(a,b) ((b)>(a) ? (a) : (b))
-#define MAX(a,b) ((a)>(b) ? (a) : (b))
 
 int TRender::toScreen(float p)
 {
