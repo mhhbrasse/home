@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
 #include <Windows.h>
 #include "DataTypes.h"
 #include "TRender.h"

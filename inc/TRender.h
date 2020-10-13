@@ -48,6 +48,7 @@ private:
 		mat4_t mCameraView;
 		mat4_t mPerspectiveCameraView;
 		float mCameraDistance;
+
 		Normal3 mLightDirection;
 };  
 
