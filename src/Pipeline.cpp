@@ -23,10 +23,11 @@ TModel3D objectData[] =
 	{1, "../Models/teapot.off", 6320, 3644, +1, -6.43f, 0, false, false },
 	{2 ,"../Models/iss.small.obj", 6643, 3309 , +1, -3.0f, -1, false, false },
 	{3, "../Models/CSHP_DV_130_01_______00200.obj", 104192, 52098, +1, -5.06f, -1, true, true },
-	//{4, "../Models/alfa147.off", 97214, 53012, +1, -164.16f, 0, false, false },
-	//{5, "../Models/voyager2_out.obj", 110114, 55446, +1, -320.0f, -1, false, true },
-	//{6, "../Models/New_Horizons.obj", (260871-99985), 99985, +1, -6.75f, -1, true, true }, 
-	//{7, "../Models/ISS_2016.out.obj", 2338906, 1322565, +1, -4268.0f, -1, false, true },	
+	{4, "../Models/17243_Voyager_1_okt2020.obj", 46244, 23212, +1, -10.0f, -1, true, false},
+	//{5, "../Models/alfa147.off", 97214, 53012, +1, -164.16f, 0, false, false },
+	//{6, "../Models/voyager2_out.obj", 110114, 55446, +1, -320.0f, -1, false, true },
+	//{7, "../Models/New_Horizons.obj", (260871-99985), 99985, +1, -6.75f, -1, true, true }, 
+	//{8, "../Models/ISS_2016.out.obj", 2338906, 1322565, +1, -4268.0f, -1, false, true },	
 	{-1, "", 0, 0, 0, 0.0f, 0, true, true }
 };
 
@@ -43,11 +44,11 @@ int getNumberObjects(TModel3D objectData[])
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+	int ID = -1;
 	int frameWidth = FRAME_WIDTH;
 	int frameHeight = FRAME_HEIGHT;
 	int displayWidth = DISPLAY_WIDTH;
 	int displayHeight = DISPLAY_HEIGHT;
-	int ID = -1;
 	int numberModels = getNumberObjects(objectData);
 	bool usePerspective = true;
 	bool useLogging = true;
@@ -75,6 +76,7 @@ int main(int argc, char **argv)
 	// Create and Initalize the Renderer 
 	TRender myRenderer( frameWidth, frameHeight );
 	myRenderer.setCamera(vec3(0,0,2), vec3(0,0,0), vec3(0,1,0), usePerspective, useLogging);
+	myRenderer.setLightNormal(vec3(0.0,0.0,1.0));
 
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)

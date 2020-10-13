@@ -39,6 +39,10 @@ TRender::TRender(int width, int height)
 	vec3_t to = vec3(0,0,0);
 	vec3_t up = vec3(0,1,0);
 	setCamera(from,to,up,false,false);
+	// set default lightDirection
+	mLightDirection.nx = 0.0f;
+	mLightDirection.ny = 0.0f;
+	mLightDirection.nz = 1.0f;
 }
 
 TRender::~TRender()
@@ -136,6 +140,13 @@ void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up, bool usePerspective, 
 	mPerspectiveCameraView = m4_mul(perspectiveMatrix,mCameraView);
 }
 
+void TRender::setLightNormal(vec3_t direction)
+{
+	mLightDirection.nx = direction.x;
+	mLightDirection.ny = direction.y;
+	mLightDirection.nz = direction.z;
+}
+
 void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* verticesIn, Normal3* normalsIn, int px, int py, int qx, int qy)
 {
 	int i, color1,color2,color3;
@@ -145,9 +156,9 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 	Normal3 aLight;
 	// default light 
 	Normal3 aLightWorld;
-	aLightWorld.nx = 0.0f;
-	aLightWorld.ny = 0.0f;
-	aLightWorld.nz = 1.0f;
+	aLightWorld.nx = mLightDirection.nx;
+	aLightWorld.ny = mLightDirection.ny;
+	aLightWorld.nz = mLightDirection.nz;
 	// Convert Vertices and Normals to cameraView
 	for (i=0; i<numberVertices; i++)
 	{

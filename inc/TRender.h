@@ -16,6 +16,7 @@ public:
 		void renderModel(TModel& model, int px=-1, int py=-1, int qx=-1, int qy=-1);
 		void renderModel(int numberFaces, int numberVertices, Faces* faces, Vertex3* verticesIn, Normal3* normalsIn, int px, int py, int qx, int qy);
 		void setCamera(vec3_t from, vec3_t to, vec3_t up, bool usePerspective=false, bool info=false);
+		void setLightNormal(vec3_t direction);
 		void display( TDisplay aDisplay) {	aDisplay.display( getBuffer(), frameWidth, frameHeight ); }
 		void saveScene();
 		void clearBuffers(); // clear current active color buffer and Z buffer
@@ -47,6 +48,7 @@ private:
 		mat4_t mCameraView;
 		mat4_t mPerspectiveCameraView;
 		float mCameraDistance;
+		Normal3 mLightDirection;
 };  
 
 #endif
