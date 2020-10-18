@@ -7,12 +7,18 @@
 #include "TModel.h"
 #include "TDisplay.h"
 
+extern void convert3(char* in_filename, char* out_filename);
+extern void createSphere();
+extern void convert2(char* in_filename, char* out_filename);
 
 //const int   FRAME_WIDTH    = 4096;
 //const int   FRAME_HEIGHT   = 2048;
 
-const int   FRAME_WIDTH    = 1024;
-const int   FRAME_HEIGHT   = 1024;
+//const int   FRAME_WIDTH    = 1024;
+//const int   FRAME_HEIGHT   = 1024;
+
+const int   FRAME_WIDTH    = 512;
+const int   FRAME_HEIGHT   = 512;
 
 const int   DISPLAY_WIDTH    = 512;
 const int   DISPLAY_HEIGHT   = 512;
@@ -25,10 +31,14 @@ TModel3D objectData[] =
 	{2 ,"../Models/iss.small.obj", 6643, 3309 , +1, -3.0f, -1, false, false },
 	{3, "../Models/CSHP_DV_130_01_______00200.obj", 104192, 52098, +1, -5.06f, -1, true, true },
 	{4, "../Models/17243_Voyager_1_okt2020.obj", 46244, 23212, +1, -10.0f, -1, true, false},
-	//{5, "../Models/alfa147.off", 97214, 53012, +1, -164.16f, 0, false, false },
-	//{6, "../Models/voyager2_out.obj", 110114, 55446, +1, -320.0f, -1, false, true },
-	//{7, "../Models/New_Horizons.obj", (260871-99985), 99985, +1, -6.75f, -1, true, true }, 
-	//{8, "../Models/ISS_2016.out.obj", 2338906, 1322565, +1, -4268.0f, -1, false, true },	
+	{5, "../Models/bol.obj", 1368,2808,+1,-1.0f,-1,true,true},
+	{6, "../Models/juno.scaled.obj", 1800,902,+1,-1.0f,-1,true,false},
+	//{7, "../Models/halley.scaled_0-dot-0005.obj", 5048,2528,+1,-1000.0f,-1,true,false},
+	//{8, "../Models/ultima-thule-3d.scaled2.obj", 2404-804,804,+1,-1.0f,-1,true,false},
+	//{9, "../Models/alfa147.off", 97214, 53012, +1, -164.16f, 0, false, false },
+	//{10, "../Models/voyager2_out.obj", 110114, 55446, +1, -320.0f, -1, false, true },
+	//{11, "../Models/New_Horizons.obj", (260871-99985), 99985, +1, -6.75f, -1, true, true }, 
+	//{12, "../Models/ISS_2016.out.obj", 2338906, 1322565, +1, -4268.0f, -1, false, true },	
 	{-1, "", 0, 0, 0, 0.0f, 0, true, true }
 };
 
@@ -67,6 +77,10 @@ int main(int argc, char **argv)
 	}
 	printf("Selected ID is %d, model: %s\n", ID, objectData[ID].modelName);
 
+	//convert2( "..\\Models\\juno.obj", "..\\Models\\juno.scaled.obj" );
+	//createSphere2();
+	//return -1;
+
 	// Create Display
 	TDisplay myDisplay( displayWidth, displayHeight );
 	
@@ -76,7 +90,8 @@ int main(int argc, char **argv)
 	
 	// Create and Initalize the Renderer 
 	TRender myRenderer( frameWidth, frameHeight );
-	myRenderer.setCamera( vec3(0,0,2), vec3(0,0,0), vec3(0,1,0), usePerspective, useLogging );
+	myRenderer.setCamera( vec3(0,0,2.0), vec3(0,0,0), vec3(0,1,0), usePerspective, useLogging );
+	//myRenderer.setCamera( vec3(0,0,1046256), vec3(0,0,0), vec3(0,1,0), usePerspective, useLogging );
 	myRenderer.setLightNormal( vec3(0.0,0.0,1.0) );
 
 	// Render the Model through successive animation steps
@@ -86,8 +101,6 @@ int main(int argc, char **argv)
 		myRenderer.clearBuffers();
 		myRenderer.transformModelX( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
-		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
-		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );
 	}
 	// Render the Model through successive animation steps
@@ -97,8 +110,6 @@ int main(int argc, char **argv)
 		myRenderer.clearBuffers();
 		myRenderer.transformModelY( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
-		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
-		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );
 	}
 	// Render the Model through successive animation steps
@@ -108,8 +119,6 @@ int main(int argc, char **argv)
 		myRenderer.clearBuffers();
 		myRenderer.transformModelZ( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
-		//myRenderer.renderModel( myModel, 0, frameWidth/2, frameWidth, frameHeight );
-		//myRenderer.renderModel( myModel, 0, 0, frameWidth, frameHeight/2 );
 		myRenderer.display( myDisplay );		
 	}
 	// Write last rendered scene to disk

@@ -86,7 +86,10 @@ void TModel::ImportModel(TModel3D& modelObject)
 	{
 		float x,y,z;
 		if (isOBJ)
+		{
 			fscanf(f,"%s %f %f %f\n",&buf[0], &x,&y,&z);
+			//printf("V: %f %f %f\n", x,y,z);
+		}
 		else
 			fscanf(f,"%f %f %f\n",&x,&y,&z);
 		Translate[i]=i;	
@@ -130,6 +133,7 @@ void TModel::ImportModel(TModel3D& modelObject)
 		Normal3 norm;
 
 		fscanf(f,"%s %d %d %d\n",&buf[0], &v0,&v1,&v2);
+		//printf("face: %d %d %d\n", v0,v1,v2);
 		if (!strcmp(buf,"c"))
 		{
 			// color for next Faces can be set via input file (experimental)
@@ -160,7 +164,7 @@ void TModel::ImportModel(TModel3D& modelObject)
 			c.y=a.z*b.x-a.x*b.z;
 			c.z=a.x*b.y-a.y*b.x;
 			len=(float) sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
-			if (len<=0.000001f)
+			if (len<=0.000000000001f) // must be smallest
 			{
 				norm.nx=0.0f;
 				norm.ny=0.0f;
@@ -233,6 +237,8 @@ void TModel::ImportModel(TModel3D& modelObject)
 	if (modelZoomFactor <= 0.0f)
 	{
 		zoomFactor = (MAX((maxz-minz), MAX((maxx-minx),(maxy-miny))))/1.00f;
+		//printf("zoomFactor %f (Xmax-min %f, Ymax-min %f, Zmax-min %f)\n", zoomFactor, maxx-minx, maxy-miny, maxz-minz);
+		
 	}
 	else
 	{
@@ -330,3 +336,4 @@ void TModel::transformModelZ( float angle )
 	}
 	return;
 }
+
