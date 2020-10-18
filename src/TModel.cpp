@@ -237,7 +237,7 @@ void TModel::ImportModel(TModel3D& modelObject)
 	if (modelZoomFactor <= 0.0f)
 	{
 		zoomFactor = (MAX((maxz-minz), MAX((maxx-minx),(maxy-miny))))/1.00f;
-		//printf("zoomFactor %f (Xmax-min %f, Ymax-min %f, Zmax-min %f)\n", zoomFactor, maxx-minx, maxy-miny, maxz-minz);
+		//printf("zoomFactor %f [Xmax-min %f, Ymax-min %f, Zmax-min %f]\n", zoomFactor, maxx-minx, maxy-miny, maxz-minz);
 		
 	}
 	else

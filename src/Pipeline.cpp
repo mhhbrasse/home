@@ -12,11 +12,11 @@ extern void convert2(char* in_filename, char* out_filename);
 //const int   FRAME_WIDTH    = 4096;
 //const int   FRAME_HEIGHT   = 2048;
 
-//const int   FRAME_WIDTH    = 1024;
-//const int   FRAME_HEIGHT   = 1024;
+const int   FRAME_WIDTH    = 1024;
+const int   FRAME_HEIGHT   = 1024;
 
-const int   FRAME_WIDTH    = 512;
-const int   FRAME_HEIGHT   = 512;
+//const int   FRAME_WIDTH    = 512;
+//const int   FRAME_HEIGHT   = 512;
 
 const int   DISPLAY_WIDTH    = 512;
 const int   DISPLAY_HEIGHT   = 512;

@@ -136,7 +136,7 @@ void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up, bool usePerspective, 
 		float fov = (float) (2.0*atan(1.0f/mCameraDistance)*180.0/M_PI);
 		perspectiveMatrix = m4_perspective2(fov, 1.0f, mCameraDistance-1.0f, mCameraDistance+1.0f);
 		if (info) {
-			printf("[Info][TRender::setCamera]: automatic Field Of View is set to %.12f degrees\n", fov);
+			printf("[Info][TRender::setCamera] : automatic Field Of View is set to %.12f degrees\n", fov);
 		}
 	}
 	mPerspectiveCameraView = m4_mul(perspectiveMatrix,mCameraView);
