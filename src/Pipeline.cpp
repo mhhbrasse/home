@@ -7,8 +7,6 @@
 #include "TModel.h"
 #include "TDisplay.h"
 
-extern void convert3(char* in_filename, char* out_filename);
-extern void createSphere();
 extern void convert2(char* in_filename, char* out_filename);
 
 //const int   FRAME_WIDTH    = 4096;
@@ -78,7 +76,6 @@ int main(int argc, char **argv)
 	printf("Selected ID is %d, model: %s\n", ID, objectData[ID].modelName);
 
 	//convert2( "..\\Models\\juno.obj", "..\\Models\\juno.scaled.obj" );
-	//createSphere2();
 	//return -1;
 
 	// Create Display
