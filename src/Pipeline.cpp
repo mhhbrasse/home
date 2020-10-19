@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	
 	// Load the Model from disk (Vehicle)
 	TModel myModel1;
-	myModel1.ImportModel( objectData[6] );
+	myModel1.ImportModel( objectData[2] );
 	
 	// Load the Model from disk (Sphere)
 	TModel myModel2;
