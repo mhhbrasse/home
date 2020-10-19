@@ -61,6 +61,11 @@ int main(int argc, char **argv)
 	int numberModels = getNumberObjects(objectData);
 	bool usePerspective = true;
 	bool useLogging = true;
+	float angleSphere = 0.0f;
+	float angleVehicle = 90.0f;
+	float vehicleX =  0.0f;
+	float vehicleY =  0.0f;
+	float vehicleZ =  0.0f;
 
 	// IO console interfacing
 	if (argc>1) 
@@ -68,6 +73,8 @@ int main(int argc, char **argv)
 		int anID = atoi(argv[1]);
 		if (anID>=0 && anID<numberModels) ID = anID;
 	}
+	// override for this demo, input value not used
+	ID = 0;
 	if (ID<0) 
 	{
 		printf("Usage: %s [objectID], where optional argument is the objectID [0..%d]\n", argv[0], numberModels-1);
@@ -81,9 +88,13 @@ int main(int argc, char **argv)
 	// Create Display
 	TDisplay myDisplay( displayWidth, displayHeight );
 	
-	// Load the Model from disk
+	// Load the Model from disk (Vehicle)
 	TModel myModel;
-	myModel.ImportModel( objectData[ID] );
+	myModel.ImportModel( objectData[2] );
+	
+	// Load the Model from disk (Sphere)
+	TModel myModel2;
+	myModel2.ImportModel( objectData[5] );
 	
 	// Create and Initalize the Renderer 
 	TRender myRenderer( frameWidth, frameHeight );
@@ -94,29 +105,53 @@ int main(int argc, char **argv)
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
+		vehicleX = 2.0f* (float) cos((angleVehicle * M_PI / 180.0)) - 0.0f;
+		vehicleZ = 2.0f* (float) sin((angleVehicle * M_PI / 180.0)) - 5.0f;
+		angleVehicle += 1.0f;
+		angleSphere += 0.1f;
+		//
+		myRenderer.transformModel( myModel, (float) angle, Y_AXIS, vec3(vehicleX,vehicleY,vehicleZ), 0.8f );
+		myRenderer.transformModel( myModel2, (float) angleSphere, Y_AXIS, vec3(0.0,0.0,-5.0), 2.5f );
+		//
 		myRenderer.swapBuffers();		
 		myRenderer.clearBuffers();
-		myRenderer.transformModelX( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
+		myRenderer.renderModel( myModel2 );
 		myRenderer.display( myDisplay );
 	}
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
+		vehicleY = 2.0f* (float) cos((angleVehicle * M_PI / 180.0)) - 0.0f;
+		vehicleZ = 2.0f* (float) sin((angleVehicle * M_PI / 180.0)) - 5.0f;
+		angleVehicle -= 1.0f;
+		angleSphere += 0.1f;
+		//
+		myRenderer.transformModel( myModel, (float) angle, X_AXIS, vec3(vehicleX,vehicleY,vehicleZ), 0.8f );
+		myRenderer.transformModel( myModel2, (float) angleSphere, Y_AXIS, vec3(0.0,0.0,-5.0), 2.5f );
+		//
 		myRenderer.swapBuffers();		
 		myRenderer.clearBuffers();
-		myRenderer.transformModelY( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
+		myRenderer.renderModel( myModel2 );
 		myRenderer.display( myDisplay );
 	}
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
+		vehicleX = 2.0f* (float) cos((angleVehicle * M_PI / 180.0)) - 0.0f;
+		vehicleZ = 2.0f* (float) sin((angleVehicle * M_PI / 180.0)) - 5.0f;
+		angleVehicle += 1.0f;
+		angleSphere += 0.1f;
+		//
+		myRenderer.transformModel( myModel, (float) angle, Z_AXIS, vec3(vehicleX,vehicleY,vehicleZ), 0.8f );
+		myRenderer.transformModel( myModel2, (float) angleSphere, Y_AXIS, vec3(0.0,0.0,-5.0), 2.5f );
+		//
 		myRenderer.swapBuffers();
 		myRenderer.clearBuffers();
-		myRenderer.transformModelZ( myModel, (float) angle );
 		myRenderer.renderModel( myModel );
-		myRenderer.display( myDisplay );		
+		myRenderer.renderModel( myModel2 );
+		myRenderer.display( myDisplay );
 	}
 	// Write last rendered scene to disk
 	myRenderer.saveScene();

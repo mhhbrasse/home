@@ -88,26 +88,11 @@ void TRender::swapBuffers()
 	if (zBuffer == zBuffer0) { zBuffer = zBuffer1; } else { zBuffer = zBuffer0; }
 }
 
-
-void TRender::transformModelX( TModel &model, float angle )
+void TRender::transformModel( TModel &model, float angle, vec3_t axis, vec3_t position, float scale)
 {
-	model.transformModelX( angle );
+	model.transformModel( angle, axis, position, scale );
 	return;
 }
-
-void TRender::transformModelY( TModel &model, float angle )
-{
-	model.transformModelY( angle );
-	return;
-}
-
-void TRender::transformModelZ( TModel &model, float angle )
-{
-	model.transformModelZ( angle );
-	return;
-}
-
-
 
 void TRender::renderModel(TModel& model, int px, int py, int qx, int qy)
 {
@@ -134,7 +119,8 @@ void TRender::setCamera(vec3_t from, vec3_t to, vec3_t up, bool usePerspective, 
 	if (usePerspective)
 	{
 		float fov = (float) (2.0*atan(1.0f/mCameraDistance)*180.0/M_PI);
-		perspectiveMatrix = m4_perspective2(fov, 1.0f, mCameraDistance-1.0f, mCameraDistance+1.0f);
+		//perspectiveMatrix = m4_perspective2(fov, 1.0f, mCameraDistance-1.0f, mCameraDistance+1000.0f);
+		perspectiveMatrix = m4_perspective2(fov, 1.0f, 1.0f, 1000.0f);
 		if (info) {
 			printf("[Info][TRender::setCamera] : automatic Field Of View is set to %.12f degrees\n", fov);
 		}
@@ -168,8 +154,7 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 		vec3_t pp = vec3(p0.x,p0.y,p0.z);
 		vec3_t rr = m4_mul_pos(mPerspectiveCameraView, pp);
 		vertices[i].x = rr.x; vertices[i].y = rr.y; vertices[i].z=rr.z; 
-		//printf("z is %f\n", rr.z);
-
+		
 		Normal3 n0 = normalsIn[i];
 		vec3_t nn = vec3(n0.nx,n0.ny,n0.nz);
 		rr = m4_mul_dir(mCameraView, nn);

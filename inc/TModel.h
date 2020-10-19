@@ -3,6 +3,7 @@
 
 #include "DataTypes.h"
 #include "TModel.h"
+#include "Math3D.h"
 
 class TModel 
 {  
@@ -19,9 +20,7 @@ public:
 
 		void ImportModel(TModel3D &modelObject);
 
-		void transformModelX( float angle );
-		void transformModelY( float angle );
-		void transformModelZ( float angle );
+		void transformModel( float angle, vec3_t axis, vec3_t position = vec3(0.0f,0.0f,0.0f), float scale = 1.0f );
 		void scaleModel();
 
 private:

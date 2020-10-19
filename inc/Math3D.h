@@ -78,6 +78,19 @@ v1.0  2016-02-15  Initial release
 #include <math.h>
 #include <stdio.h>
 
+#ifndef X_AXIS
+#define X_AXIS (vec3(1.0f,0.0f,0.0f))
+#endif
+
+#ifndef Y_AXIS
+#define Y_AXIS (vec3(0.0f,1.0f,0.0f))
+#endif
+
+#ifndef Z_AXIS
+#define Z_AXIS (vec3(0.0f,0.0f,1.0f))
+#endif
+
+
 
 // Define PI directly because we would need to define the _BSD_SOURCE or
 // _XOPEN_SOURCE feature test macros to get it from math.h. That would be a

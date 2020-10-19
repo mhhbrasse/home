@@ -279,59 +279,23 @@ void TModel::scaleModel()
 	return;
 }
 
-void TModel::transformModelX( float angle )
+void TModel::transformModel( float angle, vec3_t axis, vec3_t position, float scale )
 {
 	int numberVertices = getNumberVertices();
 	Vertex3* vertices = getVertices();
 	Normal3* normals = getNormals();
 	
-	mat4_t mRotationX = m4_rotation_x((float) (-angle*M_PI/180.0));
-	mat4_t mScaleModel = m4_scaling(vec3(1.0f,1.0f,1.0f));
-	
+	mat4_t mRotationX = m4_rotation((float) (-angle*M_PI/180.0), axis);
+	mat4_t mScaleModel = m4_scaling(vec3(scale,scale,scale));
+	mat4_t mTranslate = m4_translation(position);
+
+	mat4_t mRotationScale = m4_mul( mTranslate, m4_mul(mRotationX, mScaleModel));
 	for (int i=0; i<numberVertices; i++)
 	{
-		vec3_t v = m4_mul_pos ( m4_mul(mRotationX, mScaleModel), (vec3(verticesIn[i].x, verticesIn[i].y, verticesIn[i].z)));
+		vec3_t v = m4_mul_pos (mRotationScale, (vec3(verticesIn[i].x, verticesIn[i].y, verticesIn[i].z)));
 		vertices[i].x = v.x; vertices[i].y = v.y; vertices[i].z = v.z;
 		//
 		vec3_t n = m4_mul_pos (mRotationX, (vec3(normalsIn[i].nx, normalsIn[i].ny, normalsIn[i].nz)));
-		normals[i].nx = n.x; normals[i].ny = n.y; normals[i].nz = n.z;
-	}
-	return;
-}
-
-void TModel::transformModelY( float angle )
-{
-	int numberVertices = getNumberVertices();
-	Vertex3* vertices = getVertices();
-	Normal3* normals = getNormals();
-	mat4_t mRotationY = m4_rotation_y((float) (-angle*M_PI/180.0));
-	mat4_t mScaleModel = m4_scaling(vec3(1.0f,1.0f,1.0f));
-	
-	for (int i=0; i<numberVertices; i++)
-	{
-		vec3_t v = m4_mul_pos (m4_mul(mRotationY, mScaleModel), (vec3(verticesIn[i].x, verticesIn[i].y, verticesIn[i].z)));
-		vertices[i].x = v.x; vertices[i].y = v.y; vertices[i].z = v.z;
-		//
-		vec3_t n = m4_mul_pos (mRotationY, (vec3(normalsIn[i].nx, normalsIn[i].ny, normalsIn[i].nz)));
-		normals[i].nx = n.x; normals[i].ny = n.y; normals[i].nz = n.z;
-	}
-	return;
-}
-
-void TModel::transformModelZ( float angle )
-{
-	int numberVertices = getNumberVertices();
-	Vertex3* vertices = getVertices();
-	Normal3* normals = getNormals();
-	mat4_t mRotationZ = m4_rotation_z((float) (-angle*M_PI/180.0));
-	mat4_t mScaleModel = m4_scaling(vec3(1.0f,1.0f,1.0f));
-
-	for (int i=0; i<numberVertices; i++)
-	{
-		vec3_t v = m4_mul_pos (m4_mul(mRotationZ, mScaleModel), (vec3(verticesIn[i].x, verticesIn[i].y, verticesIn[i].z)));
-		vertices[i].x = v.x; vertices[i].y = v.y; vertices[i].z = v.z;
-		//
-		vec3_t n = m4_mul_pos (mRotationZ, (vec3(normalsIn[i].nx, normalsIn[i].ny, normalsIn[i].nz)));
 		normals[i].nx = n.x; normals[i].ny = n.y; normals[i].nz = n.z;
 	}
 	return;

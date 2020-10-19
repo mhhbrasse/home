@@ -24,9 +24,7 @@ public:
 		COLORREF* getBuffer() { return gBuffer; } 
 		void plot(int x, int y, int r, int g, int b);
 		
-		void transformModelX( TModel &model, float angle );
-		void transformModelY( TModel &model, float angle );
-		void transformModelZ( TModel &model, float angle );
+		void transformModel( TModel &model, float angle, vec3_t axis, vec3_t position = vec3(0.0f,0.0f,0.0f), float scale = 1.0f );
 
 private:
 		void scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, Normal3 n1,  int color1, int color2, int k0, int k1, int k2, int px, int py, int qx, int qy);
