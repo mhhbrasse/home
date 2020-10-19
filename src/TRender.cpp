@@ -10,6 +10,8 @@
 #include "Math3D.h"
 #include <stdlib.h> // calloc
 
+extern bool jo_write_jpg(const char *filename, const void *data, int width, int height, int comp, int quality);
+
 #define FLOAT_MIN (-100000.0f)
 #define SQR(x) ((x)*(x))
 
@@ -45,6 +47,9 @@ TRender::TRender(int width, int height)
 	mLightDirection.nx = 0.0f;
 	mLightDirection.ny = 0.0f;
 	mLightDirection.nz = 1.0f;
+
+	//
+	nrJPG = 0;
 }
 
 TRender::~TRender()
@@ -201,7 +206,6 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 	if (vertices!=NULL) free(vertices);
 	if (normals!=NULL) free(normals);
 }
-
 				
 void TRender::saveScene()
 {
@@ -209,9 +213,9 @@ void TRender::saveScene()
 	char rgb_r;
 	char rgb_g;
 	char rgb_b;
-
 	FILE* f;	
-	sprintf(filename, "scene_%d_%d.ppm", frameWidth, frameHeight);
+	sprintf(filename, ".\\images\\scene_%d.ppm", nrJPG++);
+	//sprintf(filename, "scene_%d_%d.ppm", frameWidth, frameHeight);
 	if ((f=fopen(filename, "w"))!=NULL) 	
 	{
 		fprintf(f, "P6 %d %d 255 ", frameWidth, frameHeight);
@@ -234,6 +238,13 @@ void TRender::saveScene()
 			fclose(f);
 		}
 	}
+}
+
+void TRender::saveSceneJPG()
+{
+	char filename[64];
+	sprintf(filename, ".\\images\\scene_%d.jpg", nrJPG++);
+	jo_write_jpg(filename, gBuffer, frameWidth, frameHeight, 4, 90);
 }
 
 

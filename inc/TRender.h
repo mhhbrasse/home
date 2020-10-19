@@ -19,6 +19,7 @@ public:
 		void setLightNormal(vec3_t direction);
 		void display( TDisplay aDisplay) {	aDisplay.display( getBuffer(), frameWidth, frameHeight ); }
 		void saveScene();
+		void saveSceneJPG();
 		void clearBuffers(); // clear current active color buffer and Z buffer
 		void swapBuffers();  // swap active color buffers and Z buffers 
 		COLORREF* getBuffer() { return gBuffer; } 
@@ -48,6 +49,8 @@ private:
 		float mCameraDistance;
 
 		Normal3 mLightDirection;
+
+		int nrJPG;
 };  
 
 #endif

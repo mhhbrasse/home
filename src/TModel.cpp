@@ -301,3 +301,30 @@ void TModel::transformModel( float angle, vec3_t axis, vec3_t position, float sc
 	return;
 }
 
+// https://en.wikipedia.org/wiki/Euler_angles#Matrix_orientation
+void TModel::transformModel( float angleRotateY1, float angleRotateZ2, float angleRotateY3, vec3_t position, float scale )
+{
+	int numberVertices = getNumberVertices();
+	Vertex3* vertices = getVertices();
+	Normal3* normals = getNormals();
+	
+	float a0 = (float) (-angleRotateY1*M_PI/180.0);
+	float a1 = (float) (-angleRotateZ2*M_PI/180.0);
+	float a2 = (float) (-angleRotateY3*M_PI/180.0);
+
+	mat4_t mRotationX = m4_mul(m4_rotation_y(a0),m4_mul( m4_rotation_z(a1), m4_rotation_y(a2)));
+	mat4_t mScaleModel = m4_scaling(vec3(scale,scale,scale));
+	mat4_t mTranslate = m4_translation(position);
+
+	mat4_t mRotationScale = m4_mul( mTranslate, m4_mul(mRotationX, mScaleModel));
+	for (int i=0; i<numberVertices; i++)
+	{
+		vec3_t v = m4_mul_pos (mRotationScale, (vec3(verticesIn[i].x, verticesIn[i].y, verticesIn[i].z)));
+		vertices[i].x = v.x; vertices[i].y = v.y; vertices[i].z = v.z;
+		//
+		vec3_t n = m4_mul_pos (mRotationX, (vec3(normalsIn[i].nx, normalsIn[i].ny, normalsIn[i].nz)));
+		normals[i].nx = n.x; normals[i].ny = n.y; normals[i].nz = n.z;
+	}
+	return;
+}
+

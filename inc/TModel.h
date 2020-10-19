@@ -21,6 +21,7 @@ public:
 		void ImportModel(TModel3D &modelObject);
 
 		void transformModel( float angle, vec3_t axis, vec3_t position = vec3(0.0f,0.0f,0.0f), float scale = 1.0f );
+		void transformModel( float angleRotateY1, float angleRotateZ2, float angleRotateY3, vec3_t position, float scale );
 		void scaleModel();
 
 private:
