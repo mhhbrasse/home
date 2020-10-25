@@ -53,9 +53,10 @@ void TModel::ImportModel(TModel3D& modelObject)
 	bool isOBJ = modelObject.FiletypeOBJ;
 	bool verticesAreUnique = modelObject.verticesAreUnique;
 	float modelZoomFactor = modelObject.zoomFactor;
-
+	int flatShading = 0;
 	int i,j;
 	FILE *f;
+
 	int *Translate = (int*) calloc(N, sizeof(int));
 	
 	if (vertices !=NULL) free(vertices);
@@ -100,7 +101,7 @@ void TModel::ImportModel(TModel3D& modelObject)
 			while (j<i)
 			{
 				if ((vertices[j].x==x) && (vertices[j].y==y) && (vertices[j].z==z))
-				{					
+				{			
 					Translate[i]=j;
 					j=i;
 				}
@@ -124,10 +125,10 @@ void TModel::ImportModel(TModel3D& modelObject)
 
 	// read faces and compute face and vertex normals
 	i = 0; 
+	
 	while (i < numberFaces)
 	{
 		int v0,v1,v2;
-		
 		float len;
 		Vertex3 p0,p1,p2,a,b,c;
 		Normal3 norm;
@@ -140,6 +141,13 @@ void TModel::ImportModel(TModel3D& modelObject)
 			// format: c colorR colorG colorB
 			k0 = v0; k1 = v1; k2 = v2; 
 		}
+		else if (!strcmp(buf,"s"))
+		{
+			// flat shading i.s.o. gouraud/phong shading
+			// format: s v0 0 0 
+			// printf("flat shading active\n");
+			flatShading = v0; 
+		}
 		else // "3 vertixId vertexID vertexID"
 		{
 			faces[i].v0=Translate[v0+INDEX];
@@ -149,6 +157,8 @@ void TModel::ImportModel(TModel3D& modelObject)
 			faces[i].k0 = k0;
 			faces[i].k1 = k1;
 			faces[i].k2 = k2;
+
+			faces[i].shading = flatShading;
 
 			p0=vertices[faces[i].v0];
 			p1=vertices[faces[i].v1];
@@ -285,17 +295,17 @@ void TModel::transformModel( float angle, vec3_t axis, vec3_t position, float sc
 	Vertex3* vertices = getVertices();
 	Normal3* normals = getNormals();
 	
-	mat4_t mRotationX = m4_rotation((float) (-angle*M_PI/180.0), axis);
+	mat4_t mRotationAxis = m4_rotation((float) (-angle*M_PI/180.0), axis);
 	mat4_t mScaleModel = m4_scaling(vec3(scale,scale,scale));
 	mat4_t mTranslate = m4_translation(position);
 
-	mat4_t mRotationScale = m4_mul( mTranslate, m4_mul(mRotationX, mScaleModel));
+	mat4_t mRotationScale = m4_mul( mTranslate, m4_mul(mRotationAxis, mScaleModel));
 	for (int i=0; i<numberVertices; i++)
 	{
 		vec3_t v = m4_mul_pos (mRotationScale, (vec3(verticesIn[i].x, verticesIn[i].y, verticesIn[i].z)));
 		vertices[i].x = v.x; vertices[i].y = v.y; vertices[i].z = v.z;
 		//
-		vec3_t n = m4_mul_pos (mRotationX, (vec3(normalsIn[i].nx, normalsIn[i].ny, normalsIn[i].nz)));
+		vec3_t n = m4_mul_pos (mRotationAxis, (vec3(normalsIn[i].nx, normalsIn[i].ny, normalsIn[i].nz)));
 		normals[i].nx = n.x; normals[i].ny = n.y; normals[i].nz = n.z;
 	}
 	return;
@@ -308,9 +318,9 @@ void TModel::transformModel( float angleRotateY1, float angleRotateZ2, float ang
 	Vertex3* vertices = getVertices();
 	Normal3* normals = getNormals();
 	
-	float a0 = (float) (-angleRotateY1*M_PI/180.0);
-	float a1 = (float) (-angleRotateZ2*M_PI/180.0);
-	float a2 = (float) (-angleRotateY3*M_PI/180.0);
+	float a0 = (float) (angleRotateY1*M_PI/180.0);
+	float a1 = (float) (angleRotateZ2*M_PI/180.0);
+	float a2 = (float) (angleRotateY3*M_PI/180.0);
 
 	mat4_t mRotationX = m4_mul(m4_rotation_y(a0),m4_mul( m4_rotation_z(a1), m4_rotation_y(a2)));
 	mat4_t mScaleModel = m4_scaling(vec3(scale,scale,scale));

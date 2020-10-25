@@ -10,7 +10,7 @@ typedef struct Vertex3 Vertex3;
 struct Normal3 { float nx; float ny; float nz; } ;
 typedef struct Normal3 Normal3; 
 
-struct Faces { int v0; int v1; int v2; int k0; int k1; int k2; } ;
+struct Faces { int v0; int v1; int v2; int k0; int k1; int k2; int shading; } ;
 typedef struct Faces Faces; 
 
 struct _TModel3D 
@@ -26,5 +26,18 @@ struct _TModel3D
 	bool verticesAreUnique; // true == vertices have unique positions
 };
 typedef struct _TModel3D TModel3D;
+
+
+struct _TOrbit 
+{
+	float N;
+	float i;
+	float w;
+	float a;
+	float e;
+	float M;
+};
+
+typedef struct _TOrbit TOrbit;
 
 #endif

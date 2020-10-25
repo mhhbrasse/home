@@ -173,19 +173,64 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 	for (i=0; i<numberFaces; i++)
 	{
 		float light;
+		float len;
+		Vertex3 p0,p1,p2,a,b,c;
+		Normal3 norm;
+		int flatShading = faces[i].shading;
+		
+		if (flatShading == 1)
+		{
+			norm.nx = 0.0;
+			norm.ny = 0.0;
+			norm.nz = 0.0;
+
+			p0=verticesIn[faces[i].v0];
+			p1=verticesIn[faces[i].v1];
+			p2=verticesIn[faces[i].v2];
+			a.x=p1.x-p0.x;
+			a.y=p1.y-p0.y;
+			a.z=p1.z-p0.z;
+			b.x=p2.x-p0.x;
+			b.y=p2.y-p0.y;
+			b.z=p2.z-p0.z;
+			c.x=a.y*b.z-a.z*b.y;
+			c.y=a.z*b.x-a.x*b.z;
+			c.z=a.x*b.y-a.y*b.x;
+			len=(float) sqrt(c.x*c.x+c.y*c.y+c.z*c.z);
+			if (len<=0.000000000001f) // must be smallest
+			{
+				norm.nx=0.0f;
+				norm.ny=0.0f;
+				norm.nz=0.0f;
+			}
+			else
+			{
+				norm.nx=1.0f*c.x/len;// CCW == counterclockwise (-1 or 1)
+				norm.ny=1.0f*c.y/len;// CCW == counterclockwise (-1 or 1)
+				norm.nz=1.0f*c.z/len;// CCW == counterclockwise (-1 or 1)
+			}
+
+			vec3_t nn = vec3(norm.nx,norm.ny,norm.nz);
+			vec3_t rr = m4_mul_dir(mCameraView, nn);
+			norm.nx = rr.x; norm.ny = rr.y; norm.nz = rr.z;
+		}
+
 		light = aLight.nx*normals[faces[i].v0].nx + aLight.ny*normals[faces[i].v0].ny + aLight.nz*normals[faces[i].v0].nz;
+		if (flatShading==1) light = aLight.nx*norm.nx + aLight.ny*norm.ny + aLight.nz*norm.nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
 		color1 = (int) floor(0.0f+light*(255.0f-0.0f));
 		//color1 = (int) floor(10.0f+light*(255.0f-10.0f)); // interacts with next if-statement
 
 		light = aLight.nx*normals[faces[i].v1].nx + aLight.ny*normals[faces[i].v1].ny + aLight.nz*normals[faces[i].v1].nz;
+		if (flatShading==1) light = aLight.nx*norm.nx + aLight.ny*norm.ny + aLight.nz*norm.nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
 		color2 = (int) floor(0.0f+light*(255.0f-0.0f));
 		//color2 = (int) floor(10.0f+light*(255.0f-10.0f)); // interacts with next if-statement
 
 		light = aLight.nx*normals[faces[i].v2].nx + aLight.ny*normals[faces[i].v2].ny + aLight.nz*normals[faces[i].v2].nz;
+		if (flatShading==1) light = aLight.nx*norm.nx + aLight.ny*norm.ny + aLight.nz*norm.nz;
 		if (light<0.0f) light=0.0f;
 		if (light>1.0f) light=1.0f;				
 		color3 = (int) floor(0.0f+light*(255.0f-0.0f));
@@ -194,12 +239,22 @@ void TRender::renderModel(int numberFaces, int numberVertices, Faces* faces, Ver
 		if (color1>0 || color2>0 || color3>0)
 		{
 			//color = floor(0.0f+light*(255.0f-0.0f));
-			RenderTriangle(
-				vertices[faces[i].v0], vertices[faces[i].v1], vertices[faces[i].v2],
-				normals[faces[i].v0], normals[faces[i].v1], normals[faces[i].v2],
-				//normals[i], normals[i], normals[i],
-				color1,color2,color3, faces[i].k0, faces[i].k1, faces[i].k2,
-				px, py, qx, qy);
+			if (flatShading == 1)
+			{
+				RenderTriangle(
+					vertices[faces[i].v0], vertices[faces[i].v1], vertices[faces[i].v2],
+					norm, norm, norm,
+					color1,color2,color3, faces[i].k0, faces[i].k1, faces[i].k2,
+					px, py, qx, qy);
+			}
+			else
+			{
+				RenderTriangle(
+					vertices[faces[i].v0], vertices[faces[i].v1], vertices[faces[i].v2],
+					normals[faces[i].v0], normals[faces[i].v1], normals[faces[i].v2],
+					color1,color2,color3, faces[i].k0, faces[i].k1, faces[i].k2,
+					px, py, qx, qy);
+			}
 		}
 	}	
 	//
@@ -254,9 +309,9 @@ void TRender::scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, No
 	int i;
 	Normal3 ni;
 	float light;
-	float eyex = 0.0f; 
-	float eyey = 0.0f; 
-	float eyez = 1.0f;
+	float eyex = mLightDirection.nx; //0.0f; 
+	float eyey = mLightDirection.ny; //0.0f; 
+	float eyez = mLightDirection.nz; //1.0f;
 
 	// fill scanline (x0,y) .. (x1,y) /\ x0!=x1		
 	if (x1 == x0) return;
@@ -278,6 +333,8 @@ void TRender::scanline(int y, int x0, int x1, float z0, float z1, Normal3 n0, No
 			if (light>1.0f) light=1.0f;
 		}
 		
+		color = light*255; // added 2020-10-22
+
 		if (px<=i && i<qx && py<=y && y<=qy && z<=0.0) // within clip area
 		{
 			if (light > 0.0f)

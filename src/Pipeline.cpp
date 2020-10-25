@@ -6,6 +6,7 @@
 #include "TRender.h"
 #include "TModel.h"
 #include "TDisplay.h"
+#include "simulation.h"
 
 extern void convert2(char* in_filename, char* out_filename);
 extern void convert3(char* in_filename, char* out_filename);
@@ -13,11 +14,11 @@ extern void convert3(char* in_filename, char* out_filename);
 //const int   FRAME_WIDTH    = 4096;
 //const int   FRAME_HEIGHT   = 2048;
 
-//const int   FRAME_WIDTH    = 1024;
-//const int   FRAME_HEIGHT   = 1024;
+const int   FRAME_WIDTH    = 1024;
+const int   FRAME_HEIGHT   = 1024;
 
-const int   FRAME_WIDTH    = 512;
-const int   FRAME_HEIGHT   = 512;
+//const int   FRAME_WIDTH    = 512;
+//const int   FRAME_HEIGHT   = 512;
 
 const int   DISPLAY_WIDTH    = 512;
 const int   DISPLAY_HEIGHT   = 512;
@@ -33,7 +34,9 @@ TModel3D objectData[] =
 	{5, "../Models/bol.obj", 1368,2808,+1,-1.0f,-1,true,true},
 	{6, "../Models/TIE.obj", 5401,2702,+1,-1.0f,-1,true,false},
 	//{6, "../Models/juno.scaled.obj", 1800,902,+1,-1.0f,-1,true,false},
-	//{7, "../Models/Pallas_Torppa.scaled.obj", 2040,1022,+1,-1.0f,-1,true,false},
+	{7, "../Models/Pallas_Torppa.scaled.obj", 2040,1022,+1,-1.0f,-1,true,false},
+	{8, "../Models/Cube.obj", 12, 8,+1,-1.0f,-1,true,false},
+	{9, "../Models/Bennu_v20_200k.obj", 296454-99846, 99846,+1,-1.0f,-1,true,true},
 	//{8, "../Models/Eros_Gaskell_50k_poly.scaled.obj", 49152, 25350,+1,-1.0f,-1,true,false},
 	//{9, "../Models/halley.scaled_0-dot-0005.obj", 5048,2528,+1,-1000.0f,-1,true,false},
 	//{10, "../Models/ultima-thule-3d.scaled2.obj", 2404-804,804,+1,-1.0f,-1,true,false},
@@ -44,14 +47,14 @@ TModel3D objectData[] =
 	{-1, "", 0, 0, 0, 0.0f, 0, true, true }
 };
 
+extern TOrbit solarSystemObject[2];
+
 int getNumberObjects(TModel3D objectData[])
 {
 	int n=0;
 	while (objectData[n].objectID >= 0) n++;
 	return n;
 }
-
-///////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,7 +68,7 @@ int main(int argc, char **argv)
 	int numberModels = getNumberObjects(objectData);
 	bool usePerspective = true;
 	bool useLogging = true;
-	
+
 	// IO console interfacing
 	if (argc>1) 
 	{
@@ -88,10 +91,12 @@ int main(int argc, char **argv)
 	// Create Display
 	TDisplay myDisplay( displayWidth, displayHeight );
 	
+	printf("Import Model 1\n");
 	// Load the Model from disk (Vehicle)
 	TModel myModel1;
 	myModel1.ImportModel( objectData[2] );
 	
+	printf("Import Model 2\n");
 	// Load the Model from disk (Sphere)
 	TModel myModel2;
 	myModel2.ImportModel( objectData[5] );
@@ -113,6 +118,37 @@ int main(int argc, char **argv)
 	float vehicleZ =  orbitRadius * (float) sin((angleVehicle * M_PI / 180.0)) + positionSphere.z;
 	vec3_t positionVehicle = vec3(vehicleX, vehicleY, vehicleZ);
 	
+
+#if 0
+	// Render the Model through successive animation steps
+	for (int angle=0; angle<29; angle++)
+	{
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		vec3_t moonPosition;
+		setOrbitalElements(2020, 10, angle, 0.0f);
+		moonPosition = computePosition3D( 
+			solarSystemObject[1].N, solarSystemObject[1].i, solarSystemObject[1].w,
+			solarSystemObject[1].a, solarSystemObject[1].e, solarSystemObject[1].M);
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		positionVehicle.x = 2.0f*moonPosition.x + positionSphere.x;
+		positionVehicle.y = 2.0f*moonPosition.z + positionSphere.y;
+		positionVehicle.z = 2.0f*moonPosition.y + positionSphere.z;
+		angleVehicle += 1.0f;
+		angleSphere += 0.2f;
+		//
+		myModel1.transformModel(   (float) -angle, 0.0f, 0.0f, positionVehicle, vehicleScale  );
+		myModel2.transformModel( 90.0f, (float) 23.4f, (float) -angleSphere, positionSphere, sphereScale );
+		//
+		myRenderer.swapBuffers();
+		myRenderer.clearBuffers();
+		myRenderer.renderModel( myModel1 );
+		myRenderer.renderModel( myModel2 );
+		myRenderer.display( myDisplay );
+		//myRenderer.saveScene();
+	}
+	return 1;
+#endif
+
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
@@ -121,10 +157,11 @@ int main(int argc, char **argv)
 		angleVehicle += 1.0f;
 		angleSphere += 0.2f;
 		//
-		myModel1.transformModel(  (float) angle, Y_AXIS, positionVehicle, vehicleScale  );
-		myModel2.transformModel( 90.0f, (float) 23.4f, (float) angleSphere, positionSphere, sphereScale );
+		//myModel1.transformModel(  (float) -angle, Y_AXIS, positionVehicle, vehicleScale  );
+		myModel1.transformModel(   (float) -angle, 0.0f, 0.0f, positionVehicle, vehicleScale  );
+		myModel2.transformModel( 90.0f, (float) 23.4f, (float) -angleSphere, positionSphere, sphereScale );
 		//
-		myRenderer.swapBuffers();		
+		myRenderer.swapBuffers();
 		myRenderer.clearBuffers();
 		myRenderer.renderModel( myModel1 );
 		myRenderer.renderModel( myModel2 );
@@ -139,8 +176,9 @@ int main(int argc, char **argv)
 		angleVehicle -= 1.0f;
 		angleSphere += 0.2f;
 		//
-		myModel1.transformModel( (float) angle, X_AXIS, positionVehicle, vehicleScale  );
-		myModel2.transformModel( 90.0f, (float) 23.4f, (float) angleSphere, positionSphere, sphereScale );
+		//myModel1.transformModel( (float) angle, X_AXIS, positionVehicle, vehicleScale  );
+		myModel1.transformModel( 90.0f, (float) -angle, -90.0f, positionVehicle, vehicleScale  );
+		myModel2.transformModel( 90.0f, (float) 23.4f, (float) -angleSphere, positionSphere, sphereScale );
 		//
 		myRenderer.swapBuffers();		
 		myRenderer.clearBuffers();
@@ -157,8 +195,8 @@ int main(int argc, char **argv)
 		angleVehicle += 1.0f;
 		angleSphere += 0.2f;
 		//
-		myModel1.transformModel( (float)angle, (float) angle, 0.0f, positionVehicle, vehicleScale );
-		myModel2.transformModel( 90.0f, (float) 23.4f, (float) angleSphere, positionSphere, sphereScale );
+		myModel1.transformModel( (float) -angle, (float) -angle, 0.0f, positionVehicle, vehicleScale );
+		myModel2.transformModel( 90.0f, (float) 23.4f, (float) -angleSphere, positionSphere, sphereScale );
 		//
 		myRenderer.swapBuffers();
 		myRenderer.clearBuffers();
