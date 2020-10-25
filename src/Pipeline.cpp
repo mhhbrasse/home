@@ -118,37 +118,6 @@ int main(int argc, char **argv)
 	float vehicleZ =  orbitRadius * (float) sin((angleVehicle * M_PI / 180.0)) + positionSphere.z;
 	vec3_t positionVehicle = vec3(vehicleX, vehicleY, vehicleZ);
 	
-
-#if 0
-	// Render the Model through successive animation steps
-	for (int angle=0; angle<29; angle++)
-	{
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		vec3_t moonPosition;
-		setOrbitalElements(2020, 10, angle, 0.0f);
-		moonPosition = computePosition3D( 
-			solarSystemObject[1].N, solarSystemObject[1].i, solarSystemObject[1].w,
-			solarSystemObject[1].a, solarSystemObject[1].e, solarSystemObject[1].M);
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		positionVehicle.x = 2.0f*moonPosition.x + positionSphere.x;
-		positionVehicle.y = 2.0f*moonPosition.z + positionSphere.y;
-		positionVehicle.z = 2.0f*moonPosition.y + positionSphere.z;
-		angleVehicle += 1.0f;
-		angleSphere += 0.2f;
-		//
-		myModel1.transformModel(   (float) -angle, 0.0f, 0.0f, positionVehicle, vehicleScale  );
-		myModel2.transformModel( 90.0f, (float) 23.4f, (float) -angleSphere, positionSphere, sphereScale );
-		//
-		myRenderer.swapBuffers();
-		myRenderer.clearBuffers();
-		myRenderer.renderModel( myModel1 );
-		myRenderer.renderModel( myModel2 );
-		myRenderer.display( myDisplay );
-		//myRenderer.saveScene();
-	}
-	return 1;
-#endif
-
 	// Render the Model through successive animation steps
 	for (int angle=0; angle<=360; angle++)
 	{
