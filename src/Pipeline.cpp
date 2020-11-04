@@ -7,17 +7,8 @@
 #include "TModel.h"
 #include "TDisplay.h"
 
-extern void convert2(char* in_filename, char* out_filename);
-extern void convert3(char* in_filename, char* out_filename);
-
-//const int   FRAME_WIDTH    = 4096;
-//const int   FRAME_HEIGHT   = 2048;
-
 const int   FRAME_WIDTH    = 1024;
 const int   FRAME_HEIGHT   = 1024;
-
-//const int   FRAME_WIDTH    = 512;
-//const int   FRAME_HEIGHT   = 512;
 
 const int   DISPLAY_WIDTH    = 512;
 const int   DISPLAY_HEIGHT   = 512;
@@ -28,25 +19,9 @@ TModel3D objectData[] =
 	{0, "../Models/airplane.off", 7446, 3745, +1, -41.20f, 0, false, true },
 	{1, "../Models/teapot.off", 6320, 3644, +1, -6.43f, 0, false, false },
 	{2 ,"../Models/iss.small.obj", 6643, 3309 , +1, -3.0f, -1, false, false },
-	{3, "../Models/CSHP_DV_130_01_______00200.obj", 104192, 52098, +1, -5.06f, -1, true, true },
-	{4, "../Models/17243_Voyager_1_okt2020.obj", 46244, 23212, +1, -10.0f, -1, true, false},
-	{5, "../Models/bol.obj", 1368,2808,+1,-1.0f,-1,true,true},
-	{6, "../Models/TIE.obj", 5401,2702,+1,-1.0f,-1,true,false},
-	//{6, "../Models/juno.scaled.obj", 1800,902,+1,-1.0f,-1,true,false},
-	{7, "../Models/Pallas_Torppa.scaled.obj", 2040,1022,+1,-1.0f,-1,true,false},
-	{8, "../Models/Cube.obj", 12, 8,+1,-1.0f,-1,true,false},
-	{9, "../Models/Bennu_v20_200k.obj", 296454-99846, 99846,+1,-1.0f,-1,true,true},
-	//{8, "../Models/Eros_Gaskell_50k_poly.scaled.obj", 49152, 25350,+1,-1.0f,-1,true,false},
-	//{9, "../Models/halley.scaled_0-dot-0005.obj", 5048,2528,+1,-1000.0f,-1,true,false},
-	//{10, "../Models/ultima-thule-3d.scaled2.obj", 2404-804,804,+1,-1.0f,-1,true,false},
-	//{11, "../Models/alfa147.off", 97214, 53012, +1, -164.16f, 0, false, false },
-	//{12, "../Models/voyager2_out.obj", 110114, 55446, +1, -320.0f, -1, false, true },
-	//{13, "../Models/New_Horizons.obj", (260871-99985), 99985, +1, -6.75f, -1, true, true }, 
-	//{14, "../Models/ISS_2016.out.obj", 2338906, 1322565, +1, -4268.0f, -1, false, true },	
+	{3, "../Models/bol.obj", 1368,2808,+1,-1.0f,-1,true,true},
 	{-1, "", 0, 0, 0, 0.0f, 0, true, true }
 };
-
-extern TOrbit solarSystemObject[2];
 
 int getNumberObjects(TModel3D objectData[])
 {
@@ -54,7 +29,6 @@ int getNumberObjects(TModel3D objectData[])
 	while (objectData[n].objectID >= 0) n++;
 	return n;
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -83,10 +57,6 @@ int main(int argc, char **argv)
 	}
 	printf("Selected ID is %d, model: %s\n", ID, objectData[ID].modelName);
 
-	//convert2( "..\\Models\\Eros_Gaskell_50k_poly.obj", "..\\Models\\Eros_Gaskell_50k_poly.scaled.obj" );
-	//convert3("..\\Models\\TIE3.obj", "..\\Models\\TIE.obj");
-	//return -1;
-
 	// Create Display
 	TDisplay myDisplay( displayWidth, displayHeight );
 	
@@ -98,7 +68,7 @@ int main(int argc, char **argv)
 	printf("Import Model 2\n");
 	// Load the Model from disk (Sphere)
 	TModel myModel2;
-	myModel2.ImportModel( objectData[5] );
+	myModel2.ImportModel( objectData[3] );
 	
 	// Create and Initalize the Renderer 
 	TRender myRenderer( frameWidth, frameHeight );
