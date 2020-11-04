@@ -12,19 +12,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\jo_jpeg.cpp" />
-    <ClCompile Include="..\src\orbitn.cpp" />
     <ClCompile Include="..\src\Pipeline.cpp" />
-    <ClCompile Include="..\src\simulation.cpp" />
     <ClCompile Include="..\src\TDisplay.cpp" />
     <ClCompile Include="..\src\TModel.cpp" />
     <ClCompile Include="..\src\TPlot.cpp" />
     <ClCompile Include="..\src\TRender.cpp" />
-    <ClCompile Include="..\src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\inc\DataTypes.h" />
     <ClInclude Include="..\inc\Math3D.h" />
-    <ClInclude Include="..\inc\simulation.h" />
     <ClInclude Include="..\inc\TDisplay.h" />
     <ClInclude Include="..\inc\TModel.h" />
     <ClInclude Include="..\inc\TPlot.h" />
