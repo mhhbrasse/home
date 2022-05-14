@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 // Pipeline.cpp
 ///////////////////////////////////////////////////////////////////////////////
@@ -6,6 +7,8 @@
 #include "TRender.h"
 #include "TModel.h"
 #include "TDisplay.h"
+
+#pragma warning (disable: 4996)
 
 //extern void convert2(char* in_filename, char* out_filename);
 //extern void convert3(char* in_filename, char* out_filename);
@@ -66,9 +69,9 @@ void loadFile()
 		float f0,f1,f2;
 		fscanf(f,"%f %f %f %f %f %f %f\n", &trajTime[i], &traj[i].x, &traj[i].y, &traj[i].z, &f0, &f1, &f2);
 		
-		traj[i].x = traj[i].x* (1.0/1.0E6);
-		traj[i].y = traj[i].y* (1.0/1.0E6);
-		traj[i].z = traj[i].z* (1.0/1.0E6);
+		traj[i].x = (float) (traj[i].x* (1.0/1.0E6));
+		traj[i].y = (float) (traj[i].y* (1.0/1.0E6));
+		traj[i].z = (float) (traj[i].z* (1.0/1.0E6));
 		if (i>411)
 			printf("%f %f %f %f\n", traj[i].x, traj[i].y, traj[i].z);
 	}
@@ -80,7 +83,7 @@ void loadFile()
 	{
 		float f0,f1,f2,f3;
 		fscanf(f,"%f %f %f %f %f %f %f\n", &f3, &moon[i].x, &moon[i].y, &moon[i].z, &f0, &f1, &f2);
-		moon[i] = v3_muls(moon[i], (1.0/1.0E6));
+		moon[i] = v3_muls(moon[i], (1.0f/1.0E6f));
 	}
 	fclose(f);
 

@@ -1,3 +1,5 @@
+#pragma warning (disable: 4996)
+
 /* Public Domain, Simple, Minimalistic JPEG writer - http://jonolick.com
  *
  * downloaded from: https://create.stephan-brumme.com/toojpeg/
