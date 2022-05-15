@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\jo_jpeg.cpp" />
-    <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\Pipeline.cpp" />
     <ClCompile Include="..\src\TDisplay.cpp" />
     <ClCompile Include="..\src\TModel.cpp" />
