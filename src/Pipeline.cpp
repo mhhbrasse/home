@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 		//myRenderer.saveScene();
 	}
 	// Render the Model through successive animation steps
-	for (int angle=0; angle<=360; angle++)
+	for (int angle=0; angle<=360; angle+=2)
 	{
 		positionVehicle.y = orbitRadius * (float) cos((angleVehicle * M_PI / 180.0)) + positionSphere.y;
 		positionVehicle.z = orbitRadius * (float) sin((angleVehicle * M_PI / 180.0)) + positionSphere.z;
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 		//myRenderer.saveScene();
 	}
 	// Render the Model through successive animation steps
-	for (int angle=0; angle<=360; angle++)
+	for (int angle=0; angle<=360; angle+=2)
 	{
 		positionVehicle.x = orbitRadius * (float) cos((angleVehicle * M_PI / 180.0)) + positionSphere.x;
 		positionVehicle.z = orbitRadius * (float) sin((angleVehicle * M_PI / 180.0)) + positionSphere.z;
